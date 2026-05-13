@@ -1,0 +1,150 @@
+IGI SCHOOL OF GEMOLOGY — RSP M1 ASSESSMENT
+DEPLOYMENT SETUP GUIDE
+==============================================
+Prepared for: Tanveer / Capablis Technologies
+Files: index.html, trainer.html, appscript.gs
+Google Sheet: https://docs.google.com/spreadsheets/d/1GN5J4R7jePjShdsGxuokBRwwnaR7QlCVoLMh__9hUlI/edit
+
+==============================================
+STEP 1 — SET UP GOOGLE APPS SCRIPT
+==============================================
+
+1. Open the Google Sheet at the link above
+2. Click Extensions → Apps Script
+3. Delete any existing code in the editor
+4. Open the file appscript.gs and copy ALL its contents
+5. Paste into the Apps Script editor
+6. Click the floppy disk icon (Save) — name the project "IGI_RSP_Assessment"
+7. Click Deploy → New Deployment
+8. Under "Select type" choose "Web app"
+9. Set:
+   - Description: IGI RSP M1 Assessment Backend
+   - Execute as: Me
+   - Who has access: Anyone
+10. Click Deploy
+11. Copy the Web app URL — it looks like:
+    https://script.google.com/macros/s/XXXXXXXXXX/exec
+12. IMPORTANT: Keep this URL private — it is your backend endpoint
+
+==============================================
+STEP 2 — ADD THE APPS SCRIPT URL TO BOTH HTML FILES
+==============================================
+
+In BOTH index.html and trainer.html, find this line:
+    const APPS_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_URL_HERE";
+
+Replace PASTE_YOUR_APPS_SCRIPT_URL_HERE with the URL from Step 1.
+Do this in BOTH files.
+
+==============================================
+STEP 3 — DEPLOY ON VERCEL
+==============================================
+
+Option A — Via GitHub (recommended):
+1. Create a new GitHub repository: igi-rsp-assessment
+2. Upload index.html, trainer.html to the repository root
+3. Go to vercel.com → New Project → Import from GitHub
+4. Select the repository
+5. Leave all settings as default
+6. Click Deploy
+7. Vercel assigns a URL like: igi-rsp-assessment.vercel.app
+
+Option B — Via Vercel CLI:
+1. Install: npm install -g vercel
+2. In the project folder: vercel --prod
+3. Follow the prompts
+
+==============================================
+STEP 4 — VERIFY DEPLOYMENT
+==============================================
+
+After deployment, test:
+
+PARTICIPANT TOOL:
+  https://your-vercel-url.vercel.app
+  - Should show loading spinner then "No active batch" message
+  - This is correct — no batch has been activated yet
+
+TRAINER PANEL:
+  https://your-vercel-url.vercel.app/trainer.html
+  - Login with: admin / IGIRSP2026
+  - Or with: john / IGIJohn2026
+  - Should show the trainer dashboard
+
+==============================================
+STEP 5 — CHANGE PASSWORDS (IMPORTANT)
+==============================================
+
+Before going live, change the trainer passwords.
+In the Apps Script editor, find this line near the top:
+
+  const TRAINER_USERS = { "admin": "IGIRSP2026", "john": "IGIJohn2026" };
+
+Change the passwords to your preferred values.
+Click Save and redeploy.
+
+==============================================
+STEP 6 — TEST THE FULL FLOW
+==============================================
+
+1. Open trainer.html and log in
+2. Go to Batch Setup
+3. Select IGI Centre: Mumbai
+4. Enter Jewelry Brand: Test Brand
+5. Select PRE-Training
+6. Click Activate This Batch
+7. Copy the participant link
+
+8. Open index.html in a new tab
+9. The batch info should appear on the intro screen
+10. Complete registration with a test mobile number
+11. Answer a few questions and submit
+
+12. Back in trainer.html:
+    - Dashboard should show 1 participant
+    - Live Feed should show the submission
+    - All Results should show the row
+    - Heatmap should show the scores
+
+13. Check the Google Sheet — Responses tab should have a new row
+
+==============================================
+STEP 7 — GOING LIVE ON IGI DOMAIN (FUTURE)
+==============================================
+
+When ready to move to academy.igi.org or similar:
+
+1. Add a CNAME record pointing to cname.vercel-dns.com
+   in the IGI domain DNS settings
+2. In Vercel project settings → Domains
+3. Add the custom domain
+4. Vercel handles SSL automatically
+
+Or provide the two HTML files to the IGI web team (Yashita/Nosheer)
+with the Apps Script URL already filled in.
+
+==============================================
+TRAINER CREDENTIALS (CHANGE BEFORE GOING LIVE)
+==============================================
+
+Username: admin
+Password: IGIRSP2026
+
+Username: john
+Password: IGIJohn2026
+
+==============================================
+SUPPORT
+==============================================
+
+For any issues with the Apps Script backend, check:
+- Apps Script → Executions (shows error logs)
+- Make sure "Who has access" is set to "Anyone" in the deployment
+
+For Vercel issues:
+- Check the deployment logs in the Vercel dashboard
+- Make sure both HTML files are in the repository root
+
+==============================================
+END OF SETUP GUIDE
+==============================================

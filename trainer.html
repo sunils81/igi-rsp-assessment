@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IGI RST — Trainer Panel</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#094d59;--teal2:#0e6674;--teal3:#0a3d47;
+  --gold:#b5944a;--gold2:#d4a85a;
+  --bg:#f0ebe4;--white:#fff;--text:#2c2c2a;--muted:#5f5e5a;
+  --border:#e0d8ce;--light:#f9f5f0;
+  --green:#1D9E75;--amber:#ba7517;--red:#d85a30;--blue:#378ADD;--purple:#7F77DD;
+}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── Sidebar layout ── */
+.layout{display:flex;min-height:100vh}
+.sidebar{width:240px;background:var(--teal3);flex-shrink:0;display:flex;flex-direction:column}
+.main{flex:1;overflow-y:auto}
+
+/* ── Sidebar ── */
+.sb-logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-logo-mark{font-size:13px;font-weight:700;color:var(--gold)}
+.sb-logo-name{font-size:12px;color:#9fddc8;margin-top:2px;line-height:1.3}
+.sb-badge{margin-top:6px;display:inline-block;font-size:10px;background:rgba(181,148,74,.2);border:1px solid var(--gold);color:var(--gold);padding:2px 8px;border-radius:10px}
+.sb-nav{padding:14px 0;flex:1}
+.sb-link{display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;color:rgba(255,255,255,.65);cursor:pointer;transition:all .15s;border-left:3px solid transparent}
+.sb-link:hover{background:rgba(255,255,255,.06);color:#fff}
+.sb-link.active{background:rgba(255,255,255,.1);color:#fff;border-left-color:var(--gold)}
+.sb-link .icon{font-size:16px;width:20px;text-align:center}
+.sb-section{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.8px;padding:12px 18px 4px}
+.sb-user{padding:14px 18px;border-top:1px solid rgba(255,255,255,.1)}
+.sb-user-name{font-size:12px;color:#fff;font-weight:600}
+.sb-user-role{font-size:11px;color:rgba(255,255,255,.45);margin-top:1px}
+.sb-logout{font-size:11px;color:var(--gold);cursor:pointer;margin-top:6px;text-decoration:underline}
+
+/* ── Top bar ── */
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
+.topbar-title{font-size:16px;font-weight:600;color:var(--teal)}
+.topbar-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.refresh-btn{background:transparent;border:1px solid var(--border);padding:6px 14px;border-radius:6px;font-size:12px;color:var(--muted);cursor:pointer}
+.refresh-btn:hover{background:var(--light)}
+
+/* ── Content wrap ── */
+.content{padding:24px 28px}
+
+/* ── Screens ── */
+.panel{display:none}.panel.active{display:block}
+
+/* ── Login ── */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--teal)}
+.login-card{background:#fff;border-radius:14px;padding:40px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.2)}
+.login-logo{text-align:center;margin-bottom:24px}
+.login-logo .mark{font-size:18px;font-weight:700;color:var(--teal)}
+.login-logo .sub{font-size:12px;color:var(--muted);margin-top:3px}
+.login-field{margin-bottom:14px}
+.login-field label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
+.login-field input{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:10px 12px;font-size:13px;font-family:inherit;color:var(--text)}
+.login-field input:focus{outline:none;border-color:var(--teal)}
+.login-btn{width:100%;background:var(--teal);color:#fff;border:none;padding:12px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px}
+.login-btn:hover{background:var(--teal2)}
+.login-err{color:var(--red);font-size:12px;margin-top:8px;text-align:center;display:none}
+
+/* ── Cards ── */
+.card{background:var(--white);border-radius:10px;padding:20px 22px;box-shadow:0 1px 8px rgba(0,0,0,.06);margin-bottom:16px}
+.card-title{font-size:13px;font-weight:600;color:var(--teal);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.card-title .dot{width:8px;height:8px;border-radius:50%;background:var(--gold)}
+
+/* ── Metrics row ── */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.metric{background:var(--white);border-radius:10px;padding:16px;box-shadow:0 1px 8px rgba(0,0,0,.06);text-align:center}
+.metric-val{font-size:28px;font-weight:700;color:var(--teal)}
+.metric-lbl{font-size:11px;color:var(--muted);margin-top:3px}
+.metric.gold .metric-val{color:var(--gold)}
+.metric.green .metric-val{color:var(--green)}
+.metric.amber .metric-val{color:var(--amber)}
+
+/* ── Batch setup ── */
+.setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field.full{grid-column:1/-1}
+.field label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.field input,.field select{border:1.5px solid var(--border);border-radius:7px;padding:9px 12px;font-size:13px;font-family:inherit;color:var(--text)}
+.field input:focus,.field select:focus{outline:none;border-color:var(--teal)}
+.field input[readonly]{background:var(--light);color:var(--teal);font-weight:600}
+.toggle-row{display:flex;gap:8px}
+.type-btn{flex:1;padding:9px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;color:var(--muted);transition:all .15s}
+.type-btn.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+.activate-btn{background:var(--teal);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
+.activate-btn:hover{background:var(--teal2)}
+.deact-btn{background:#fff;color:var(--red);border:1.5px solid var(--red);padding:8px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer}
+
+/* ── Active batch banner ── */
+.active-banner{background:linear-gradient(135deg,var(--teal),var(--teal2));border-radius:10px;padding:18px 22px;color:#fff;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.ab-info .ab-label{font-size:10px;color:#9fddc8;text-transform:uppercase;letter-spacing:.8px}
+.ab-info .ab-val{font-size:16px;font-weight:700;margin-top:2px}
+.ab-meta{font-size:11px;color:#9fddc8;margin-top:4px}
+.ab-actions{display:flex;gap:8px;align-items:center}
+.copy-btn{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:7px 14px;border-radius:6px;font-size:12px;cursor:pointer}
+.copy-btn:hover{background:rgba(255,255,255,.25)}
+.no-batch-note{background:var(--light);border:1px dashed var(--border);border-radius:8px;padding:16px;text-align:center;font-size:13px;color:var(--muted)}
+
+/* ── Live feed ── */
+.feed-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--light)}
+.feed-item:last-child{border-bottom:none}
+.feed-name{font-size:13px;font-weight:500;color:var(--text)}
+.feed-meta{font-size:11px;color:var(--muted);margin-top:1px}
+.persona-pill{font-size:11px;padding:3px 10px;border-radius:10px;font-weight:600;white-space:nowrap}
+.pp1{background:#f5ece0;color:#c4a882}.pp2{background:#f0e8dc;color:#a8896a}
+.pp3{background:#eaf0e6;color:#6b7e5e}.pp4{background:#e0eeeb;color:#2d6a5e}
+.pp5{background:#e0eef2;color:#094d59}
+.feed-score{font-size:14px;font-weight:700;color:var(--text);min-width:36px;text-align:right}
+
+/* ── Results table ── */
+.results-table{width:100%;border-collapse:collapse;font-size:12px}
+.results-table th{text-align:left;padding:8px 10px;color:var(--muted);font-weight:600;border-bottom:2px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+.results-table td{padding:9px 10px;border-bottom:1px solid var(--light);vertical-align:middle}
+.results-table tr:hover td{background:var(--light)}
+.flag-y{color:var(--amber);font-weight:700}
+.flag-n{color:var(--green)}
+.score-cell{font-weight:700;font-size:13px}
+
+/* ── Heatmap ── */
+.heatmap-table{width:100%;border-collapse:collapse;font-size:11px}
+.heatmap-table th{padding:8px 6px;text-align:center;font-weight:600;color:var(--muted);font-size:10px;text-transform:uppercase}
+.heatmap-table td{padding:6px;text-align:center;border:1px solid var(--border)}
+.heatmap-table .name-cell{text-align:left;font-weight:500;padding:6px 10px;white-space:nowrap}
+.hm-cell{border-radius:4px;padding:4px 6px;font-weight:600;font-size:12px}
+.hm-red{background:#FCEBEB;color:#A32D2D}
+.hm-amber{background:#FAEEDA;color:#854F0B}
+.hm-green{background:#EAF3DE;color:#3B6D11}
+
+/* ── Charts ── */
+.bar-chart{margin-top:10px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bar-label{font-size:12px;color:var(--muted);min-width:160px}
+.bar-outer{flex:1;height:18px;background:var(--light);border-radius:3px;overflow:hidden}
+.bar-fill{height:18px;border-radius:3px;transition:width .8s;display:flex;align-items:center;padding-left:6px}
+.bar-fill span{font-size:10px;color:#fff;font-weight:600}
+.bar-val{font-size:12px;font-weight:700;color:var(--text);min-width:30px}
+
+/* ── Persona donut ── */
+.persona-dist{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.pd-item{display:flex;flex-direction:column;align-items:center;flex:1;min-width:80px}
+.pd-bar{width:100%;border-radius:4px;margin-bottom:4px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;transition:height .5s}
+.pd-label{font-size:10px;color:var(--muted);text-align:center;line-height:1.3}
+.pd-count{font-size:16px;font-weight:700;color:var(--text)}
+
+/* ── Tabs ── */
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--white);padding:6px;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,.05)}
+.tab{flex:1;padding:8px;text-align:center;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);transition:all .15s}
+.tab.active{background:var(--teal);color:#fff}
+.tab-content{display:none}.tab-content.active{display:block}
+
+/* ── Batch history ── */
+.batch-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--light);flex-wrap:wrap;gap:8px}
+.batch-code{font-size:13px;font-weight:600;color:var(--teal)}
+.batch-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.active-dot{width:8px;height:8px;background:var(--green);border-radius:50%;display:inline-block;margin-right:4px}
+
+/* ── Utilities ── */
+.spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:32px;color:var(--muted);font-size:13px}
+.success-note{background:#e8f5f2;border:1px solid var(--green);border-radius:7px;padding:10px 14px;font-size:12px;color:#0f6e56;margin-top:10px;display:none}
+.url-box{background:var(--light);border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--teal);font-family:monospace;word-break:break-all;margin-top:8px}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="loginWrap" class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="mark">IGI School of Gemology</div>
+      <div class="sub">Retail Sales Training — Trainer Panel</div>
+    </div>
+    <div class="login-field">
+      <label>Username</label>
+      <input type="text" id="loginUser" placeholder="Enter username" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="Enter password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Login →</button>
+    <div class="login-err" id="loginErr">Invalid username or password.</div>
+  </div>
+</div>
+
+<!-- ── APP ── -->
+<div id="appWrap" style="display:none" class="layout">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-mark">IGI School of Gemology</div>
+      <div class="sb-logo-name">Retail Sales Training<br>Assessment Platform</div>
+      <div class="sb-badge">Trainer Console</div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-section">Assessment</div>
+      <div class="sb-link active" onclick="navTo('p-dashboard',this)"><span class="icon">📊</span>Dashboard</div>
+      <div class="sb-link" onclick="navTo('p-setup',this)"><span class="icon">⚙️</span>Batch Setup</div>
+      <div class="sb-link" onclick="navTo('p-live',this)"><span class="icon">🔴</span>Live Feed</div>
+      <div class="sb-section">Analysis</div>
+      <div class="sb-link" onclick="navTo('p-results',this)"><span class="icon">📋</span>All Results</div>
+      <div class="sb-link" onclick="navTo('p-heatmap',this)"><span class="icon">🗺</span>Dimension Heatmap</div>
+      <div class="sb-link" onclick="navTo('p-history',this)"><span class="icon">📁</span>Batch History</div>
+    </div>
+    <div class="sb-user">
+      <div class="sb-user-name" id="sbUsername">—</div>
+      <div class="sb-user-role">Trainer · IGI RSP</div>
+      <div class="sb-logout" onclick="logout()">Sign out</div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topbarTitle">Dashboard</div>
+        <div class="topbar-sub" id="topbarSub">Overview of current batch</div>
+      </div>
+      <button class="refresh-btn" onclick="refreshCurrent()">↻ Refresh</button>
+    </div>
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div id="p-dashboard" class="panel active">
+        <div id="db-loading" style="text-align:center;padding:40px"><div class="spinner"></div></div>
+        <div id="db-content" style="display:none">
+          <div id="activeBatchBanner"></div>
+          <div class="metrics" id="dbMetrics"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="card">
+              <div class="card-title"><div class="dot"></div>Persona distribution</div>
+              <div class="persona-dist" id="dbPersonaDist"></div>
+            </div>
+            <div class="card">
+              <div class="card-title"><div class="dot"></div>Dimension averages</div>
+              <div class="bar-chart" id="dbDimBars"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BATCH SETUP -->
+      <div id="p-setup" class="panel">
+        <div class="card">
+          <div class="card-title"><div class="dot"></div>Configure new batch</div>
+          <div class="setup-grid">
+            <div class="field">
+              <label>IGI Training Centre *</label>
+              <select id="setupCentre">
+                <option value="">Select centre…</option>
+                <option>Mumbai</option><option>Delhi</option><option>Kolkata</option>
+                <option>Surat</option><option>Chennai</option><option>Pune</option>
+                <option>Bangalore</option><option>Hyderabad</option><option>Lucknow</option>
+                <option>Ahmedabad</option><option>Jaipur</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Jewelry Brand / Company *</label>
+              <input type="text" id="setupBrand" placeholder="e.g. PNG Jewellers" oninput="genBatchCode()">
+            </div>
+            <div class="field full">
+              <label>Assessment Type *</label>
+              <div class="toggle-row">
+                <button class="type-btn active" id="typePre" onclick="setType('PRE')">PRE-Training</button>
+                <button class="type-btn" id="typePost" onclick="setType('POST')">POST-Training</button>
+              </div>
+            </div>
+            <div class="field full">
+              <label>Auto-generated batch code</label>
+              <input type="text" id="setupCode" readonly placeholder="Fill fields above to generate">
+            </div>
+          </div>
+          <button class="activate-btn" onclick="activateBatch()">Activate This Batch →</button>
+          <div class="success-note" id="setupSuccess"></div>
+        </div>
+
+        <div class="card" id="activeSetupCard">
+          <div class="card-title"><div class="dot"></div>Currently active batch</div>
+          <div id="activeSetupInfo"></div>
+        </div>
+      </div>
+
+      <!-- LIVE FEED -->
+      <div id="p-live" class="panel">
+        <div id="liveBanner" style="margin-bottom:14px"></div>
+        <div class="card">
+          <div class="card-title" style="justify-content:space-between">
+            <span><div class="dot" style="display:inline-block;margin-right:7px"></div>Live submissions</span>
+            <span id="liveCount" style="font-size:12px;color:var(--muted)"></span>
+          </div>
+          <div id="liveFeed"><div class="empty-state">No submissions yet for this batch.</div></div>
+        </div>
+      </div>
+
+      <!-- ALL RESULTS -->
+      <div id="p-results" class="panel">
+        <div class="card">
+          <div class="card-title" style="justify-content:space-between">
+            <span><div class="dot" style="display:inline-block;margin-right:7px"></div>All results — current batch</span>
+            <select id="resultsFilter" style="font-size:12px;border:1px solid var(--border);border-radius:5px;padding:4px 8px" onchange="filterResults()">
+              <option value="">All personas</option>
+              <option>Product Pusher</option><option>Transaction Achiever</option>
+              <option>Problem Solver</option><option>Expert Advisor</option><option>Trusted Advisor</option>
+            </select>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="results-table" id="resultsTable">
+              <thead><tr>
+                <th>Name</th><th>Branch</th><th>Overall</th><th>Persona</th>
+                <th>ND</th><th>TE</th><th>EI</th><th>CS</th><th>RO</th><th>PV</th>
+                <th>Flag</th>
+              </tr></thead>
+              <tbody id="resultsTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- HEATMAP -->
+      <div id="p-heatmap" class="panel">
+        <div class="card">
+          <div class="card-title"><div class="dot"></div>Dimension heatmap — current batch</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:14px">
+            <span style="background:#FCEBEB;color:#A32D2D;padding:2px 8px;border-radius:4px;margin-right:6px">Red &lt; 2.0</span>
+            <span style="background:#FAEEDA;color:#854F0B;padding:2px 8px;border-radius:4px;margin-right:6px">Amber 2.0–2.5</span>
+            <span style="background:#EAF3DE;color:#3B6D11;padding:2px 8px;border-radius:4px">Green &gt; 2.5</span>
+          </div>
+          <div style="overflow-x:auto"><table class="heatmap-table" id="heatmapTable"></table></div>
+        </div>
+      </div>
+
+      <!-- BATCH HISTORY -->
+      <div id="p-history" class="panel">
+        <div class="card">
+          <div class="card-title"><div class="dot"></div>All batches</div>
+          <div id="historyList"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbzJ_r4f_0DmhC9B-bRLaniclGJBbnxy64dmYrpVdKq6Qj_5ITH1b5KBvSsxRl-6Tem6pw/exec";
+const PARTICIPANT_URL=window.location.origin+"/";
+const PERSONA_COLORS={"Product Pusher":"#c4a882","Transaction Achiever":"#a8896a","Problem Solver":"#6b7e5e","Expert Advisor":"#2d6a5e","Trusted Advisor":"#094d59"};
+const PERSONA_CLASSES={"Product Pusher":"pp1","Transaction Achiever":"pp2","Problem Solver":"pp3","Expert Advisor":"pp4","Trusted Advisor":"pp5"};
+const DIM_LABELS={ND:"Needs Discovery",TE:"Transparency & Ethics",EI:"Emotional Intelligence",CS:"Closing Style",RO:"Relationship Orientation",PV:"Product-to-Value"};
+const DIM_COLORS={ND:"#094d59",TE:"#b5944a",EI:"#1D9E75",CS:"#378ADD",RO:"#7F77DD",PV:"#D85A30"};
+
+let token="",username="",activeBatch=null,allResults=[],assType="PRE";
+
+// ── LOGIN ────────────────────────────────────────────────────
+async function doLogin(){
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value.trim();
+  if(!u||!p)return;
+  try{
+    const r=await fetch(`${APPS_SCRIPT_URL}?action=login&username=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}`);
+    const d=await r.json();
+    if(d.ok){
+      token=d.token;username=d.username;
+      document.getElementById('loginWrap').style.display='none';
+      document.getElementById('appWrap').style.display='flex';
+      document.getElementById('sbUsername').textContent=username;
+      loadDashboard();loadBatchHistory();
+    } else {
+      document.getElementById('loginErr').style.display='block';
+    }
+  }catch(e){document.getElementById('loginErr').textContent='Connection error. Check Apps Script URL.';document.getElementById('loginErr').style.display='block';}
+}
+
+function logout(){
+  token='';username='';
+  document.getElementById('appWrap').style.display='none';
+  document.getElementById('loginWrap').style.display='flex';
+}
+
+// ── NAVIGATION ───────────────────────────────────────────────
+const PANEL_TITLES={
+  'p-dashboard':['Dashboard','Overview of current batch'],
+  'p-setup':['Batch Setup','Configure and activate a training batch'],
+  'p-live':['Live Feed','Real-time submissions as they come in'],
+  'p-results':['All Results','Detailed results for current batch'],
+  'p-heatmap':['Dimension Heatmap','Colour-coded dimension scores per participant'],
+  'p-history':['Batch History','All batches run to date']
+};
+function navTo(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  const t=PANEL_TITLES[id]||['',''];
+  document.getElementById('topbarTitle').textContent=t[0];
+  document.getElementById('topbarSub').textContent=t[1];
+  if(id==='p-live')loadLiveFeed();
+  if(id==='p-results')loadResults();
+  if(id==='p-heatmap')loadHeatmap();
+  if(id==='p-history')loadBatchHistory();
+}
+function refreshCurrent(){
+  const active=document.querySelector('.panel.active');
+  if(active){
+    const id=active.id;
+    if(id==='p-dashboard')loadDashboard();
+    else if(id==='p-live')loadLiveFeed();
+    else if(id==='p-results')loadResults();
+    else if(id==='p-heatmap')loadHeatmap();
+    else if(id==='p-history')loadBatchHistory();
+  }
+}
+
+// ── BATCH CODE GEN ───────────────────────────────────────────
+function genBatchCode(){
+  const c=document.getElementById('setupCentre').value;
+  const b=document.getElementById('setupBrand').value.trim();
+  if(!c||!b){document.getElementById('setupCode').value='';return;}
+  const cCode=c.substring(0,3).toUpperCase();
+  const bCode=b.replace(/[^a-zA-Z0-9]/g,'').substring(0,5).toUpperCase();
+  const now=new Date();
+  const mon=now.toLocaleString('default',{month:'short'}).toUpperCase();
+  const yr=String(now.getFullYear()).substring(2);
+  document.getElementById('setupCode').value=`${cCode}-${bCode}-${assType}-${mon}${yr}`;
+}
+function setType(t){
+  assType=t;
+  document.getElementById('typePre').classList.toggle('active',t==='PRE');
+  document.getElementById('typePost').classList.toggle('active',t==='POST');
+  genBatchCode();
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('setupCentre').addEventListener('change',genBatchCode);
+});
+
+// ── ACTIVATE BATCH ───────────────────────────────────────────
+async function activateBatch(){
+  const centre=document.getElementById('setupCentre').value;
+  const brand=document.getElementById('setupBrand').value.trim();
+  const code=document.getElementById('setupCode').value;
+  if(!centre||!brand||!code){alert('Please fill all fields.');return;}
+  try{
+    const r=await fetch(`${APPS_SCRIPT_URL}?action=activateBatch&token=${token}&batchCode=${encodeURIComponent(code)}&igiCentre=${encodeURIComponent(centre)}&jewelryBrand=${encodeURIComponent(brand)}&assessmentType=${assType}&username=${username}`);
+    const d=await r.json();
+    if(d.ok){
+      activeBatch={batchCode:code,igiCentre:centre,jewelryBrand:brand,assessmentType:assType};
+      const sn=document.getElementById('setupSuccess');
+      sn.innerHTML=`✓ Batch <strong>${code}</strong> is now active.<br>Share this link with participants: <div class="url-box">${PARTICIPANT_URL}</div>`;
+      sn.style.display='block';
+      renderActiveSetupInfo();
+      loadDashboard();
+    }
+  }catch(e){alert('Error activating batch.');}
+}
+
+function renderActiveSetupInfo(){
+  if(!activeBatch){document.getElementById('activeSetupInfo').innerHTML='<div class="empty-state">No active batch.</div>';return;}
+  document.getElementById('activeSetupInfo').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--teal)">${activeBatch.batchCode}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px">${activeBatch.jewelryBrand} · ${activeBatch.igiCentre} · ${activeBatch.assessmentType}</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="copy-btn" style="background:var(--teal);color:#fff;border-color:var(--teal)" onclick="navigator.clipboard.writeText('${PARTICIPANT_URL}');this.textContent='Copied!'">Copy participant link</button>
+        <button class="deact-btn" onclick="deactivateBatch('${activeBatch.batchCode}')">Deactivate</button>
+      </div>
+    </div>`;
+}
+
+async function deactivateBatch(code){
+  if(!confirm('Deactivate this batch? Participants will no longer be able to submit.'))return;
+  try{
+    const r=await fetch(`${APPS_SCRIPT_URL}?action=deactivateBatch&token=${token}&batchCode=${encodeURIComponent(code)}`);
+    const d=await r.json();
+    if(d.ok){activeBatch=null;renderActiveSetupInfo();loadDashboard();}
+  }catch(e){}
+}
+
+// ── DASHBOARD ────────────────────────────────────────────────
+async function loadDashboard(){
+  document.getElementById('db-loading').style.display='block';
+  document.getElementById('db-content').style.display='none';
+  try{
+    const cfgR=await fetch(`${APPS_SCRIPT_URL}?action=getConfig`);
+    const cfg=await cfgR.json();
+    if(cfg.ok)activeBatch=cfg;
+
+    // Render active banner
+    const banner=document.getElementById('activeBatchBanner');
+    if(activeBatch&&activeBatch.batchCode){
+      banner.innerHTML=`<div class="active-banner">
+        <div class="ab-info">
+          <div class="ab-label">Active batch</div>
+          <div class="ab-val">${activeBatch.batchCode}</div>
+          <div class="ab-meta">${activeBatch.jewelryBrand||''} · ${activeBatch.igiCentre||''} · ${activeBatch.assessmentType||''}</div>
+        </div>
+        <div class="ab-actions">
+          <button class="copy-btn" onclick="navigator.clipboard.writeText('${PARTICIPANT_URL}');this.textContent='Copied!'">Copy participant link</button>
+          <button class="deact-btn" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.3)" onclick="deactivateBatch('${activeBatch.batchCode}')">Deactivate</button>
+        </div>
+      </div>`;
+    } else {
+      banner.innerHTML=`<div class="no-batch-note">No active batch. Go to <strong>Batch Setup</strong> to configure and activate one.</div>`;
+    }
+
+    if(activeBatch&&activeBatch.batchCode){
+      const rR=await fetch(`${APPS_SCRIPT_URL}?action=getResults&token=${token}&batchCode=${encodeURIComponent(activeBatch.batchCode)}`);
+      const rD=await rR.json();
+      allResults=rD.ok?rD.results:[];
+      renderDashboardMetrics();
+      renderPersonaDist();
+      renderDimBars();
+    } else {
+      document.getElementById('dbMetrics').innerHTML='';
+      document.getElementById('dbPersonaDist').innerHTML='<div class="empty-state">Activate a batch to see data.</div>';
+      document.getElementById('dbDimBars').innerHTML='';
+    }
+  }catch(e){}
+  document.getElementById('db-loading').style.display='none';
+  document.getElementById('db-content').style.display='block';
+}
+
+function renderDashboardMetrics(){
+  const n=allResults.length;
+  const avg=n?allResults.reduce((s,r)=>s+parseFloat(r.Overall||0),0)/n:0;
+  const trusted=allResults.filter(r=>r.Persona==='Trusted Advisor').length;
+  const flagged=allResults.filter(r=>r.Consistency_Overall==='Y').length;
+  document.getElementById('dbMetrics').innerHTML=`
+    <div class="metric"><div class="metric-val">${n}</div><div class="metric-lbl">Participants</div></div>
+    <div class="metric gold"><div class="metric-val">${avg.toFixed(2)}</div><div class="metric-lbl">Avg score</div></div>
+    <div class="metric green"><div class="metric-val">${trusted}</div><div class="metric-lbl">Trusted Advisors</div></div>
+    <div class="metric amber"><div class="metric-val">${flagged}</div><div class="metric-lbl">Consistency flags</div></div>`;
+}
+
+function renderPersonaDist(){
+  const counts={"Product Pusher":0,"Transaction Achiever":0,"Problem Solver":0,"Expert Advisor":0,"Trusted Advisor":0};
+  allResults.forEach(r=>{if(counts[r.Persona]!==undefined)counts[r.Persona]++;});
+  const total=allResults.length||1;
+  const el=document.getElementById('dbPersonaDist');
+  el.innerHTML=Object.entries(counts).map(([name,count])=>{
+    const pct=Math.round((count/total)*100);
+    const h=Math.max(pct*1.2,20);
+    return `<div class="pd-item">
+      <div class="pd-count">${count}</div>
+      <div class="pd-bar" style="background:${PERSONA_COLORS[name]};height:${h}px">${pct>10?pct+'%':''}</div>
+      <div class="pd-label">${name}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderDimBars(){
+  const dims=['ND','TE','EI','CS','RO','PV'];
+  const n=allResults.length||1;
+  const el=document.getElementById('dbDimBars');
+  el.innerHTML=dims.map(d=>{
+    const avg=allResults.reduce((s,r)=>s+parseFloat(r[d]||0),0)/n;
+    const pct=Math.round(((avg-1)/4)*100);
+    return `<div class="bar-row">
+      <div class="bar-label">${DIM_LABELS[d]}</div>
+      <div class="bar-outer"><div class="bar-fill" style="width:${pct}%;background:${DIM_COLORS[d]}"><span>${avg.toFixed(2)}</span></div></div>
+      <div class="bar-val">${avg.toFixed(2)}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── LIVE FEED ────────────────────────────────────────────────
+async function loadLiveFeed(){
+  if(!activeBatch||!activeBatch.batchCode){document.getElementById('liveFeed').innerHTML='<div class="empty-state">No active batch.</div>';return;}
+  try{
+    const r=await fetch(`${APPS_SCRIPT_URL}?action=getBatchStatus&token=${token}&batchCode=${encodeURIComponent(activeBatch.batchCode)}`);
+    const d=await r.json();
+    if(!d.ok)return;
+    document.getElementById('liveCount').textContent=`${d.count} submitted`;
+    const banner=document.getElementById('liveBanner');
+    banner.innerHTML=`<div class="active-banner" style="padding:12px 18px">
+      <div class="ab-info"><div class="ab-label">Live batch</div><div class="ab-val" style="font-size:14px">${activeBatch.batchCode}</div></div>
+      <div style="font-size:24px;font-weight:700;color:#fff">${d.count} <span style="font-size:14px;color:#9fddc8">submitted</span></div>
+    </div>`;
+    if(!d.participants||!d.participants.length){document.getElementById('liveFeed').innerHTML='<div class="empty-state">No submissions yet.</div>';return;}
+    document.getElementById('liveFeed').innerHTML=d.participants.map(p=>`
+      <div class="feed-item">
+        <div><div class="feed-name">${p.name}</div><div class="feed-meta">${new Date(p.timestamp).toLocaleTimeString()}</div></div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="persona-pill ${PERSONA_CLASSES[p.persona]||'pp3'}">${p.persona||'—'}</span>
+          <span class="feed-score">${parseFloat(p.overall||0).toFixed(2)}</span>
+        </div>
+      </div>`).join('');
+  }catch(e){}
+}
+
+// ── ALL RESULTS ──────────────────────────────────────────────
+let rawResults=[];
+async function loadResults(){
+  if(!activeBatch||!activeBatch.batchCode){document.getElementById('resultsTbody').innerHTML='<tr><td colspan="11" style="text-align:center;padding:20px;color:var(--muted)">No active batch.</td></tr>';return;}
+  try{
+    const r=await fetch(`${APPS_SCRIPT_URL}?action=getResults&token=${token}&batchCode=${encodeURIComponent(activeBatch.batchCode)}`);
+    const d=await r.json();
+    rawResults=d.ok?d.results:[];
+    filterResults();
+  }catch(e){}
+}
+function filterResults(){
+  const f=document.getElementById('resultsFilter').value;
+  const filtered=f?rawResults.filter(r=>r.Persona===f):rawResults;
+  document.getElementById('resultsTbody').innerHTML=filtered.length?filtered.map(r=>`
+    <tr>
+      <td>${r.Name||''}</td>
+      <td style="color:var(--muted)">${r.StoreBranch||''}</td>
+      <td class="score-cell" style="color:var(--teal)">${parseFloat(r.Overall||0).toFixed(2)}</td>
+      <td><span class="persona-pill ${PERSONA_CLASSES[r.Persona]||'pp3'}">${r.Persona||'—'}</span></td>
+      <td>${parseFloat(r.ND||0).toFixed(2)}</td>
+      <td>${parseFloat(r.TE||0).toFixed(2)}</td>
+      <td>${parseFloat(r.EI||0).toFixed(2)}</td>
+      <td>${parseFloat(r.CS||0).toFixed(2)}</td>
+      <td>${parseFloat(r.RO||0).toFixed(2)}</td>
+      <td>${parseFloat(r.PV||0).toFixed(2)}</td>
+      <td class="${r.Consistency_Overall==='Y'?'flag-y':'flag-n'}">${r.Consistency_Overall==='Y'?'⚠ Yes':'✓ No'}</td>
+    </tr>`).join('')
+    :'<tr><td colspan="11" style="text-align:center;padding:20px;color:var(--muted)">No results found.</td></tr>';
+}
+
+// ── HEATMAP ──────────────────────────────────────────────────
+async function loadHeatmap(){
+  if(!activeBatch||!activeBatch.batchCode){document.getElementById('heatmapTable').innerHTML='<tr><td style="padding:20px;color:var(--muted)">No active batch.</td></tr>';return;}
+  try{
+    const r=await fetch(`${APPS_SCRIPT_URL}?action=getResults&token=${token}&batchCode=${encodeURIComponent(activeBatch.batchCode)}`);
+    const d=await r.json();
+    if(!d.ok||!d.results.length){document.getElementById('heatmapTable').innerHTML='<tr><td style="padding:20px;color:var(--muted)">No data yet.</td></tr>';return;}
+    const dims=['ND','TE','EI','CS','RO','PV'];
+    const hmClass=v=>v<2.0?'hm-red':v<=2.5?'hm-amber':'hm-green';
+    let html=`<thead><tr><th style="text-align:left">Participant</th>${dims.map(d=>`<th>${DIM_LABELS[d]}</th>`).join('')}<th>Overall</th></tr></thead><tbody>`;
+    d.results.forEach(r=>{
+      html+=`<tr><td class="name-cell">${r.Name||''}<div style="font-size:10px;color:var(--muted)">${r.StoreBranch||''}</div></td>`;
+      dims.forEach(dd=>{
+        const v=parseFloat(r[dd]||0);
+        html+=`<td><div class="hm-cell ${hmClass(v)}">${v.toFixed(2)}</div></td>`;
+      });
+      const ov=parseFloat(r.Overall||0);
+      html+=`<td><div class="hm-cell ${hmClass(ov)}" style="font-size:13px">${ov.toFixed(2)}</div></td></tr>`;
+    });
+    html+='</tbody>';
+    document.getElementById('heatmapTable').innerHTML=html;
+  }catch(e){}
+}
+
+// ── BATCH HISTORY ─────────────────────────────────────────────
+async function loadBatchHistory(){
+  try{
+    const r=await fetch(`${APPS_SCRIPT_URL}?action=getAllBatches&token=${token}`);
+    const d=await r.json();
+    if(!d.ok||!d.batches.length){document.getElementById('historyList').innerHTML='<div class="empty-state">No batches found.</div>';return;}
+    document.getElementById('historyList').innerHTML=d.batches.map(b=>`
+      <div class="batch-row">
+        <div>
+          <div class="batch-code">${b.active==='Y'?'<span class="active-dot"></span>':''} ${b.batchCode}</div>
+          <div class="batch-meta">${b.jewelryBrand} · ${b.igiCentre} · ${b.assessmentType} · ${b.participantCount||0} participants</div>
+        </div>
+        <div style="font-size:11px;color:var(--muted)">${b.createdAt?new Date(b.createdAt).toLocaleDateString():''}</div>
+      </div>`).join('');
+  }catch(e){document.getElementById('historyList').innerHTML='<div class="empty-state">Error loading batches.</div>';}
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+</script>
+</body>
+</html>

@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IGI School of Gemology — Sales Persona Assessment</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#094d59;--teal2:#0e6674;--gold:#b5944a;--gold2:#d4a85a;
+  --bg:#f5f0eb;--white:#ffffff;--text:#2c2c2a;--muted:#5f5e5a;
+  --border:#e0d8ce;--light:#f9f5f0;--success:#1D9E75;--warn:#ba7517;
+}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── Header ── */
+.hdr{background:var(--teal);padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+.hdr-left{display:flex;align-items:center;gap:12px}
+.hdr-logo{width:36px;height:36px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:14px}
+.hdr-title{color:#fff;font-size:15px;font-weight:600;line-height:1.3}
+.hdr-sub{color:#9fddc8;font-size:11px}
+.hdr-badge{background:rgba(181,148,74,.25);border:1px solid var(--gold);color:var(--gold);font-size:11px;padding:3px 10px;border-radius:20px}
+
+/* ── Progress ── */
+.prog{background:#e8e0d8;padding:10px 24px;display:none;align-items:center;gap:12px}
+.prog-outer{flex:1;height:5px;background:#d3cdc4;border-radius:3px}
+.prog-inner{height:5px;background:var(--gold);border-radius:3px;transition:width .4s}
+.prog-txt{font-size:11px;color:var(--muted);min-width:60px;text-align:right}
+.timer{background:#fff7f0;border-bottom:1px solid var(--border);padding:8px 24px;display:none;justify-content:flex-end;align-items:center;gap:6px}
+.timer-val{font-size:14px;font-weight:700;color:var(--teal)}
+.timer-lbl{font-size:11px;color:var(--muted)}
+
+/* ── Container ── */
+.wrap{max-width:760px;margin:28px auto;padding:0 18px}
+
+/* ── Cards ── */
+.card{background:var(--white);border-radius:12px;padding:32px;box-shadow:0 2px 16px rgba(0,0,0,.07);margin-bottom:16px}
+
+/* ── Intro ── */
+.intro-title{font-size:24px;font-weight:700;color:var(--teal);margin-bottom:6px}
+.intro-sub{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.6}
+.inst-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.inst-box{background:var(--light);border-radius:8px;padding:12px 14px}
+.inst-label{font-size:10px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px}
+.inst-val{font-size:12px;color:var(--text);line-height:1.5}
+.honest-note{background:#e8f5f2;border-left:3px solid var(--success);padding:12px 14px;border-radius:0 8px 8px 0;margin-bottom:22px;font-size:12px;color:#0f6e56;line-height:1.6}
+.btn-primary{background:var(--teal);color:#fff;border:none;padding:13px 32px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:.3px;transition:background .15s}
+.btn-primary:hover{background:var(--teal2)}
+.btn-secondary{background:#fff;color:var(--teal);border:1.5px solid var(--teal);padding:11px 24px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
+
+/* ── Loading ── */
+.loading{text-align:center;padding:60px 0}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading p{font-size:13px;color:var(--muted)}
+
+/* ── Registration ── */
+.reg-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field.full{grid-column:1/-1}
+.field label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.field input,.field select{border:1.5px solid var(--border);border-radius:7px;padding:9px 12px;font-size:13px;font-family:inherit;color:var(--text);background:#fff;transition:border .15s}
+.field input:focus,.field select:focus{outline:none;border-color:var(--teal)}
+.field input[readonly]{background:var(--light);color:var(--muted)}
+.field .hint{font-size:11px;color:var(--muted)}
+.pre-filled{display:flex;align-items:center;gap:6px}
+.pre-filled input{flex:1}
+.locked-badge{font-size:10px;background:#e8f5f2;color:#0f6e56;padding:2px 7px;border-radius:10px;white-space:nowrap}
+.no-batch-warn{background:#fff3e0;border:1px solid #f59e0b;border-radius:8px;padding:14px;text-align:center;font-size:13px;color:#92400e;margin-bottom:16px}
+
+/* ── Questions ── */
+.q-num{font-size:10px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
+.q-dim{display:inline-block;font-size:10px;background:rgba(9,77,89,.08);color:var(--teal);padding:2px 8px;border-radius:10px;margin-bottom:12px}
+.q-situation{font-size:12px;color:var(--muted);font-style:italic;background:var(--light);border-left:3px solid var(--gold);padding:10px 14px;border-radius:0 6px 6px 0;margin-bottom:14px;line-height:1.6}
+.q-text{font-size:15px;font-weight:600;color:var(--text);margin-bottom:18px;line-height:1.5}
+.options{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;align-items:flex-start;gap:11px;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s;background:#fff}
+.opt:hover{border-color:var(--teal);background:#f0faf7}
+.opt.sel{border-color:var(--teal);background:#e8f5f2}
+.opt-dot{width:18px;height:18px;border-radius:50%;border:2px solid #d3cdc4;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.opt.sel .opt-dot{border-color:var(--teal);background:var(--teal)}
+.opt.sel .opt-dot::after{content:'';width:6px;height:6px;background:#fff;border-radius:50%}
+.opt-text{font-size:13px;color:var(--text);line-height:1.5}
+
+/* ── Nav ── */
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.nav-back{background:#fff;color:var(--muted);border:1.5px solid var(--border);padding:9px 20px;border-radius:7px;font-size:13px;cursor:pointer}
+.nav-back:hover{background:var(--light)}
+.nav-next{background:var(--teal);color:#fff;border:none;padding:9px 24px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer}
+.nav-next:hover{background:var(--teal2)}
+.nav-next:disabled{background:#c4bdb4;cursor:not-allowed}
+
+/* ── Results ── */
+.result-hero{background:var(--teal);border-radius:12px;padding:32px;text-align:center;color:#fff;margin-bottom:16px}
+.result-hero .rh-label{font-size:11px;color:#9fddc8;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.result-hero .rh-persona{font-size:30px;font-weight:700;color:var(--gold);margin-bottom:4px}
+.result-hero .rh-score{font-size:52px;font-weight:700;line-height:1}
+.result-hero .rh-score-sub{font-size:12px;color:#9fddc8;margin-bottom:14px}
+.result-hero .rh-desc{font-size:13px;color:#d4e8e4;line-height:1.7;max-width:520px;margin:0 auto}
+
+/* Persona scale */
+.scale-card{background:#fff;border-radius:10px;padding:18px 22px;margin-bottom:14px;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.scale-card h3{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin-bottom:14px}
+.scale-track{display:flex;border-radius:6px;overflow:hidden;height:32px;margin-bottom:6px}
+.scale-seg{flex:1;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#fff;transition:opacity .3s}
+.scale-seg.active{outline:3px solid var(--teal);outline-offset:-2px;opacity:1!important}
+.scale-labels{display:flex;font-size:10px;color:var(--muted)}
+.scale-labels span{flex:1;text-align:center}
+
+/* Dimension breakdown */
+.dim-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.dim-card{background:#fff;border-radius:10px;padding:14px 16px;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.dim-card.best{border-left:3px solid var(--success)}
+.dim-card.weak{border-left:3px solid var(--warn)}
+.dim-name{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.dim-bar-outer{height:6px;background:var(--border);border-radius:3px;margin-bottom:6px}
+.dim-bar-inner{height:6px;border-radius:3px;transition:width .8s}
+.dim-score-row{display:flex;justify-content:space-between;align-items:center}
+.dim-score{font-size:16px;font-weight:700;color:var(--text)}
+.dim-persona{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
+
+/* Consistency flag */
+.flag-card{background:#fff8e6;border:1px solid #f59e0b;border-radius:10px;padding:16px 18px;margin-bottom:14px}
+.flag-card h3{font-size:12px;font-weight:700;color:#92400e;margin-bottom:6px}
+.flag-card p{font-size:12px;color:#78350f;line-height:1.6}
+
+/* Strengths / Gaps */
+.sg-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.sg-card{background:#fff;border-radius:10px;padding:16px 18px;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.sg-card h3{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+.sg-item{font-size:12px;color:var(--text);padding:5px 0;border-bottom:1px solid var(--light);line-height:1.5}
+.sg-item:last-child{border-bottom:none}
+.sg-item.s::before{content:'✓ ';color:var(--success);font-weight:700}
+.sg-item.g::before{content:'→ ';color:var(--warn);font-weight:700}
+
+/* Reflection */
+.reflect-card{background:var(--light);border-radius:10px;padding:16px 20px;margin-bottom:14px}
+.reflect-card h3{font-size:11px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+.reflect-card ol{padding-left:16px}
+.reflect-card li{font-size:13px;color:var(--text);line-height:1.7}
+.commit-card{background:#fff;border-radius:10px;padding:18px;margin-bottom:14px;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.commit-card h3{font-size:13px;font-weight:600;color:var(--teal);margin-bottom:4px}
+.commit-card p{font-size:12px;color:var(--muted);margin-bottom:10px}
+.commit-ta{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical;min-height:72px;color:var(--text)}
+.commit-ta:focus{outline:none;border-color:var(--teal)}
+.result-actions{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+.btn-print{background:var(--gold);color:#fff;border:none;padding:11px 24px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
+.btn-submit{background:var(--teal);color:#fff;border:none;padding:11px 24px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
+
+/* ── Screens ── */
+.screen{display:none}.screen.active{display:block}
+
+/* ── Blocked ── */
+.blocked-card{text-align:center;padding:40px}
+.blocked-icon{font-size:48px;margin-bottom:14px}
+.blocked-card h2{font-size:20px;color:var(--teal);margin-bottom:8px}
+.blocked-card p{font-size:13px;color:var(--muted);line-height:1.6}
+
+@media(max-width:600px){
+  .inst-grid,.reg-grid,.dim-grid,.sg-grid{grid-template-columns:1fr}
+  .field.full{grid-column:1}
+  .card{padding:20px}
+}
+@media print{
+  .hdr,.prog,.timer,.nav,.result-actions{display:none!important}
+  .wrap{margin:0}.result-hero{background:var(--teal)!important;-webkit-print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-logo">IGI</div>
+    <div>
+      <div class="hdr-title">IGI School of Gemology</div>
+      <div class="hdr-sub">Retail Sales Training — M1 Pre-Assessment</div>
+    </div>
+  </div>
+  <div class="hdr-badge">Sales Persona Discovery</div>
+</div>
+<div class="prog" id="prog"><div class="prog-outer"><div class="prog-inner" id="progBar" style="width:0%"></div></div><div class="prog-txt" id="progTxt">0 / 25</div></div>
+<div class="timer" id="timer"><span style="font-size:15px">⏱</span><span class="timer-val" id="timerVal">20:00</span><span class="timer-lbl">remaining</span></div>
+
+<div class="wrap">
+
+  <!-- LOADING -->
+  <div id="s-loading" class="screen active">
+    <div class="card loading"><div class="spinner"></div><p>Loading assessment configuration…</p></div>
+  </div>
+
+  <!-- NO BATCH -->
+  <div id="s-nobatch" class="screen">
+    <div class="card">
+      <div class="no-batch-warn">
+        <strong>No active batch found.</strong><br>
+        Please ask your trainer to activate a batch before you begin.
+      </div>
+    </div>
+  </div>
+
+  <!-- INTRO -->
+  <div id="s-intro" class="screen">
+    <div class="card">
+      <div class="intro-title">Discovering My Sales Persona</div>
+      <div class="intro-sub">Before today's training begins, take a few minutes to honestly reflect on how you currently behave with customers — not how you would like to behave ideally. This is a diagnostic tool, not a test.</div>
+      <div class="honest-note">
+        <strong>Important:</strong> Pick the option that most closely describes what you <em>actually do today</em> — not what sounds best or what you aspire to do. Honest answers give you a more useful result and help your trainer focus on what matters most for you.
+      </div>
+      <div class="inst-grid">
+        <div class="inst-box"><div class="inst-label">Questions</div><div class="inst-val">25 retail floor situations</div></div>
+        <div class="inst-box"><div class="inst-label">Time allowed</div><div class="inst-val">20 minutes</div></div>
+        <div class="inst-box"><div class="inst-label">Attempts</div><div class="inst-val">One attempt only per batch</div></div>
+        <div class="inst-box"><div class="inst-label">After completion</div><div class="inst-val">Your Sales Persona result and a personalised breakdown</div></div>
+      </div>
+      <div id="batch-info" style="font-size:12px;color:var(--muted);margin-bottom:18px"></div>
+      <button class="btn-primary" onclick="showScreen('s-reg')">Continue to Registration →</button>
+    </div>
+  </div>
+
+  <!-- REGISTRATION -->
+  <div id="s-reg" class="screen">
+    <div class="card">
+      <div style="font-size:16px;font-weight:600;color:var(--teal);margin-bottom:4px">Your Details</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:20px">Please fill in your details accurately. These are used for your result record.</div>
+      <div class="reg-grid">
+        <div class="field full">
+          <label>Full Name *</label>
+          <input type="text" id="r-name" placeholder="Enter your full name">
+        </div>
+        <div class="field">
+          <label>Mobile Number *</label>
+          <input type="tel" id="r-mobile" placeholder="10-digit mobile" maxlength="10">
+        </div>
+        <div class="field">
+          <label>Email ID</label>
+          <input type="email" id="r-email" placeholder="your@email.com">
+        </div>
+        <div class="field full">
+          <label>Jewelry Brand / Company Name *</label>
+          <div class="pre-filled">
+            <input type="text" id="r-brand" placeholder="e.g. PNG Jewellers, Tanishq, Malabar Gold">
+          </div>
+          <span class="hint">The retail company you work for</span>
+        </div>
+        <div class="field full">
+          <label>Store Branch / Location *</label>
+          <input type="text" id="r-branch" placeholder="e.g. Andheri West Mumbai, Salt Lake Kolkata">
+        </div>
+        <div class="field">
+          <label>IGI Training Centre</label>
+          <input type="text" id="r-igictr" readonly>
+          <span class="hint locked-badge" style="width:fit-content">Set by trainer</span>
+        </div>
+        <div class="field">
+          <label>Batch Code</label>
+          <input type="text" id="r-batch" readonly>
+          <span class="hint locked-badge" style="width:fit-content">Auto-generated</span>
+        </div>
+        <div class="field">
+          <label>Designation *</label>
+          <select id="r-desig">
+            <option value="">Select…</option>
+            <option>Sales Associate</option>
+            <option>Senior Sales Associate</option>
+            <option>Team Lead</option>
+            <option>Store Manager</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Years in Jewelry Retail *</label>
+          <select id="r-exp">
+            <option value="">Select…</option>
+            <option>Less than 1 year</option>
+            <option>1–3 years</option>
+            <option>3–5 years</option>
+            <option>5–10 years</option>
+            <option>10+ years</option>
+          </select>
+        </div>
+      </div>
+      <div id="reg-error" style="color:#d85a30;font-size:12px;margin-bottom:12px;display:none"></div>
+      <button class="btn-primary" onclick="submitReg()">Start Assessment →</button>
+    </div>
+  </div>
+
+  <!-- BLOCKED -->
+  <div id="s-blocked" class="screen">
+    <div class="card blocked-card">
+      <div class="blocked-icon">🔒</div>
+      <h2>Assessment Already Completed</h2>
+      <p>Our records show this mobile number has already completed the assessment for this batch.<br><br>Please speak to your trainer if you believe this is an error.</p>
+    </div>
+  </div>
+
+  <!-- QUESTIONS -->
+  <div id="s-question" class="screen">
+    <div class="card" id="qCard"></div>
+    <div class="nav">
+      <button class="nav-back" id="btnBack" onclick="prevQ()">← Back</button>
+      <button class="nav-next" id="btnNext" onclick="nextQ()" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- SUBMITTING -->
+  <div id="s-submitting" class="screen">
+    <div class="card loading"><div class="spinner"></div><p>Saving your responses…</p></div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="s-results" class="screen">
+    <div class="result-hero">
+      <div class="rh-label">Your Sales Persona</div>
+      <div class="rh-persona" id="rPersona"></div>
+      <div class="rh-score" id="rScore"></div>
+      <div class="rh-score-sub">average score across 25 situations</div>
+      <p id="rDesc"></p>
+    </div>
+
+    <div class="scale-card">
+      <h3>Where you stand on the persona scale</h3>
+      <div class="scale-track">
+        <div class="scale-seg" id="seg0" style="background:#c4a882">Product Pusher</div>
+        <div class="scale-seg" id="seg1" style="background:#a8896a">Transaction Achiever</div>
+        <div class="scale-seg" id="seg2" style="background:#6b7e5e">Problem Solver</div>
+        <div class="scale-seg" id="seg3" style="background:#2d6a5e">Expert Advisor</div>
+        <div class="scale-seg" id="seg4" style="background:#094d59">Trusted Advisor</div>
+      </div>
+      <div class="scale-labels"><span>&lt;1.25</span><span>1.26–1.75</span><span>1.76–2.25</span><span>2.26–2.75</span><span>2.76+</span></div>
+    </div>
+
+    <div style="background:#fff;border-radius:10px;padding:18px 22px;margin-bottom:14px;box-shadow:0 1px 8px rgba(0,0,0,.06)">
+      <h3 style="font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin-bottom:14px">Dimension breakdown</h3>
+      <div class="dim-grid" id="dimGrid"></div>
+    </div>
+
+    <div id="flagCard" style="display:none" class="flag-card">
+      <h3>⚠ Trainer note — varied responses detected</h3>
+      <p id="flagMsg"></p>
+    </div>
+
+    <div class="sg-grid">
+      <div class="sg-card"><h3>What you are doing well</h3><div id="sgStrengths"></div></div>
+      <div class="sg-card"><h3>Opportunities to grow</h3><div id="sgGaps"></div></div>
+    </div>
+
+    <div class="reflect-card">
+      <h3>Pair reflection — discuss with your partner (10 min)</h3>
+      <ol>
+        <li>Where do you see your persona — does this score feel accurate to you?</li>
+        <li>What are two or three real situations from the store floor that confirm you are at this level?</li>
+        <li>What habit or mindset may be keeping you at this level?</li>
+        <li>What is one specific thing you can do differently in the next 45 days to move toward Trusted Advisor?</li>
+      </ol>
+    </div>
+
+    <div class="commit-card">
+      <h3>My 45-day commitment</h3>
+      <p>Based on your reflection, write one specific behavior you will practice starting today.</p>
+      <textarea class="commit-ta" id="commitment" placeholder="I will…"></textarea>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn-print" onclick="window.print()">🖨 Print result</button>
+      <button class="btn-submit" id="btnFinalSubmit" onclick="finalSubmit()">Save & Submit →</button>
+    </div>
+    <div id="submit-confirm" style="text-align:center;margin-top:12px;font-size:12px;color:var(--success);display:none">
+      ✓ Your result has been saved. Your trainer has your report.
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzJ_r4f_0DmhC9B-bRLaniclGJBbnxy64dmYrpVdKq6Qj_5ITH1b5KBvSsxRl-6Tem6pw/exec";
+
+// ── QUESTIONS (inline) ────────────────────────────────────────
+const QUESTIONS=[{id:1,dim:"ND",situation:"A well-dressed woman walks in alone. She looks around the diamond section for about two minutes without asking for help.",question:"What do you do?",ft:false,options:[{text:"Walk up and tell her about the new collection that just arrived this week.",score:1},{text:"Ask if she is looking for something specific or would like to see the latest designs.",score:2},{text:"Wait until she makes eye contact, then approach and ask what brings her in today.",score:4},{text:"Let her browse, then when she pauses at something, ask what caught her attention and what the occasion is.",score:5},{text:"Approach her and ask if she has a budget in mind so you can show the right pieces.",score:3}]},{id:2,dim:"TE",situation:"A customer is comparing two diamond rings. Both are IGI certified. One is ₹15,000 more expensive. She asks: 'They look the same to me. What is the real difference?'",question:"What do you say?",ft:false,options:[{text:"Tell her the more expensive one is from the premium collection and has better finishing and craftsmanship.",score:1},{text:"Explain that the difference is in the cut grade — Excellent versus Very Good — and show her the certificates so she can see the exact grading.",score:4},{text:"Tell her the price difference reflects the brand value and the certification quality.",score:2},{text:"Walk her through the specific 4C differences between the two stones using the certificates, explain what those differences mean for how the diamond looks in different lighting, and let her decide if the difference matters for her.",score:5},{text:"Explain that the higher-priced one has a better cut grade which affects the sparkle, and show her both under the loupe.",score:3}]},{id:3,dim:"EI",situation:"A young man is buying a diamond pendant for his girlfriend's birthday. He keeps saying 'I think she will like this' but his body language shows he is not confident. He has not asked for your opinion.",question:"What do you do?",ft:false,options:[{text:"Confirm his choice and move toward billing since he seems to have decided.",score:1},{text:"Ask him if he would like a second opinion before finalizing.",score:3},{text:"Tell him it is a great choice and she will definitely love it.",score:2},{text:"Ask him what she is like — her style, what she usually wears — and use that to either confirm his choice or gently suggest an alternative.",score:5},{text:"Ask him what made him pick this one to understand if his reasoning is solid.",score:4}]},{id:4,dim:"CS",situation:"A customer has been looking at one ring for 15 minutes. She keeps coming back to it. She has not said she wants it but has not moved on either.",question:"What do you do?",ft:true,options:[{text:"Tell her it is one of the last pieces in this design to create some urgency.",score:1},{text:"Ask her directly: 'Would you like to go ahead with this one?'",score:3},{text:"Let her keep looking — she will ask when she is ready.",score:2},{text:"Ask her what is making her pause — not to push, but to understand if there is something unresolved.",score:5},{text:"Suggest she try it on one more time and ask how it feels.",score:4}]},{id:5,dim:"RO",situation:"A customer has just bought a diamond necklace. While you are processing the bill, she mentions she has a daughter who is getting engaged next year.",question:"What do you do with this information?",ft:false,options:[{text:"Congratulate her and continue processing the bill.",score:1},{text:"Mention that you have a beautiful range of bridal jewelry and invite her to come back.",score:2},{text:"Note it down and tell her you will inform her when the new bridal collection arrives.",score:3},{text:"Ask a couple of questions about her daughter's preferences and suggest she bring her in when the time comes — offer to be her point of contact personally.",score:4},{text:"Take note of the engagement timeline, ask briefly about her daughter's taste, and tell her you will keep an eye out for pieces that would suit her — making this the beginning of a conversation, not a sales pitch.",score:5}]},{id:6,dim:"PV",situation:"A customer points to a diamond and asks: 'What makes this one special?'",question:"What do you say?",ft:false,options:[{text:"Tell her it is from the premium collection with excellent finish and high demand.",score:1},{text:"Explain it is a VS1 clarity, G color, Excellent cut — top grades across all 4Cs.",score:3},{text:"Explain the cut grade and how it affects the way the diamond catches light — then show her by moving it slightly under the light.",score:4},{text:"Ask her what she finds special about it first — then confirm or build on what she is already seeing, connecting it to her occasion.",score:5},{text:"Tell her the IGI certification on this stone is one of the strongest in this price range.",score:2}]},{id:7,dim:"ND",situation:"A man walks in and says directly: 'I need a diamond ring. Anniversary gift. Something good.'",question:"How do you respond?",ft:true,options:[{text:"Take him to the solitaire section and show the three best-selling options in the mid range.",score:2},{text:"Ask him a few questions first — how long they have been married, what his wife usually wears, whether she prefers simple or bold styles.",score:5},{text:"Ask for his budget and narrow down to two or three choices from there.",score:3},{text:"Show him the full range and let him decide what looks right.",score:1},{text:"Ask which anniversary it is and whether she has mentioned anything she likes recently.",score:4}]},{id:8,dim:"TE",situation:"A customer asks: 'Is this the best diamond you have in this price range or are you showing me this because you want to sell it?'",question:"How do you respond?",ft:true,options:[{text:"Assure her this is absolutely the best value option in this range.",score:1},{text:"Tell her you always recommend what suits the customer best and this one fits her requirements well.",score:2},{text:"Acknowledge the question directly, bring out two other options in the same range, and walk her through the trade-offs of each so she can compare.",score:5},{text:"Tell her you have shown her the best option for her stated needs, but you are happy to show alternatives if she wants.",score:3},{text:"Bring out one alternative option and explain why you recommended the first one over it.",score:4}]},{id:9,dim:"EI",situation:"After you share the price of a piece, the customer goes quiet. She is not saying anything. She is looking at the piece but not picking it up.",question:"What do you do in the next 30 seconds?",ft:true,options:[{text:"Quickly mention that there is an EMI option available to make it easier.",score:2},{text:"Tell her it is one of the best values in this range to reinforce her confidence.",score:1},{text:"Stay quiet for a moment, then ask if she would like to see something in a different range.",score:3},{text:"Let the silence sit for a few seconds, then gently ask if there is something she is thinking through — without assuming it is the price.",score:5},{text:"Ask her if the price is a concern and whether she would like to explore other options.",score:4}]},{id:10,dim:"CS",situation:"A customer says 'I like it but I want to think about it' and starts moving toward the exit.",question:"What do you say in the next 20 seconds?",ft:false,options:[{text:"Tell her the price may change and it is better to book it now.",score:1},{text:"Ask her what specifically she wants to think about — you might be able to address it right now.",score:4},{text:"Say 'of course' and hand her your card.",score:2},{text:"Ask if there is one thing she is still unsure about — if you can resolve it, great; if not, you understand.",score:5},{text:"Ask her if she would like you to keep the piece aside for 24 hours.",score:3}]},{id:11,dim:"RO",situation:"A customer returns to the store three months after buying a ring. She is not here to buy anything — she just wants to show you how it looks on her hand now that she has been wearing it.",question:"How much time do you give her?",ft:true,options:[{text:"A few minutes — you have other customers to attend to.",score:1},{text:"As long as she needs — this is exactly the kind of relationship that matters.",score:5},{text:"A few minutes, and while you are talking, you gently mention the new collection that came in.",score:2},{text:"Give her full attention, genuinely engage with how she has been, and treat it as the most important interaction of the moment.",score:4},{text:"Ten minutes — enough to make her feel valued without neglecting other duties.",score:3}]},{id:12,dim:"PV",situation:"A customer says: 'I don't understand all this carat and clarity talk. Just tell me which one is better.'",question:"What do you do?",ft:false,options:[{text:"Point to the more expensive one and say that one is better overall.",score:1},{text:"Simplify the 4Cs into one sentence each and then give her a recommendation.",score:3},{text:"Tell her it depends on what matters most to her and ask one question: does she want something that sparkles more or something that looks larger?",score:4},{text:"Set aside the technical language entirely, ask her about the occasion and how she imagines wearing it, then show her the difference physically — not on paper.",score:5},{text:"Explain that clarity affects purity and carat affects size, then show her the difference between the two options.",score:2}]},{id:13,dim:"ND",situation:"A young woman comes in with her mother. The mother is doing most of the talking. The daughter is quiet and seems uncertain.",question:"Who do you engage with and how?",ft:true,options:[{text:"Engage with the mother since she is leading the conversation — she is clearly the decision-maker.",score:1},{text:"Address both equally, show designs, and let them discuss between themselves.",score:2},{text:"Engage primarily with the mother but occasionally ask the daughter direct questions to understand her taste.",score:4},{text:"After a few minutes, gently create a moment to ask the daughter directly what she is drawn to — without the mother answering for her.",score:5},{text:"Ask the mother what style her daughter usually prefers.",score:3}]},{id:14,dim:"TE",situation:"A customer has selected a diamond and is almost ready to buy. You notice the stone has a characteristic that was not mentioned — a slight tinge visible in certain lighting. It is within the certified grade but it is noticeable.",question:"What do you do?",ft:false,options:[{text:"Complete the sale — it is within the certified grade and the customer is happy.",score:1},{text:"Mention it only if the customer asks about it directly.",score:2},{text:"Point it out before the sale, explain what it means, and let her decide if she is comfortable with it.",score:5},{text:"Show her the stone under different lighting and explain what she is seeing so she makes an informed choice.",score:4},{text:"Mention it briefly and reassure her that it is within the certified grade.",score:3}]},{id:15,dim:"EI",situation:"An elderly couple is buying a diamond ring for their son who is moving abroad. The husband is practical and focused on value. The wife keeps getting emotional during the conversation.",question:"How do you handle this dynamic?",ft:false,options:[{text:"Focus on the husband since he is making the financial decision.",score:1},{text:"Address both equally and present facts and emotional value together.",score:3},{text:"Acknowledge the emotion in the moment — say something brief and warm to the wife — then continue addressing both their concerns together.",score:5},{text:"Give the wife a moment when she gets emotional, then refocus on the practical aspects with the husband.",score:2},{text:"Ask the wife what would make this purchase feel right for such a special occasion, then connect that to the specific piece.",score:4}]},{id:16,dim:"CS",situation:"It is 15 minutes to closing time. A customer is still deciding between two pieces. She is not in a hurry but you need to close the store.",question:"What do you do?",ft:true,options:[{text:"Tell her the store is closing soon and ask her to make a decision.",score:1},{text:"Let her take her time — customer experience matters more than closing time.",score:3},{text:"Offer to keep both pieces aside overnight so she can come back tomorrow without pressure.",score:4},{text:"Gently let her know you have a few minutes left, then summarize the key difference between the two pieces clearly so she can decide without feeling rushed.",score:5},{text:"Ask her which one she is leaning toward and help her finalize that one.",score:2}]},{id:17,dim:"RO",situation:"You remember a customer who bought from you six months ago. She has just walked in. You have no purchase record in front of you.",question:"How do you open the conversation?",ft:false,options:[{text:"Greet her like a new customer and ask how you can help.",score:1},{text:"Greet her warmly and say she looks familiar — ask if she has been to the store before.",score:3},{text:"Say 'Welcome back' and ask how the piece she bought last time is doing.",score:4},{text:"Greet her by name if you remember it, reference something specific from her last visit, and ask how she has been — making her feel like she is walking in to see someone who knows her.",score:5},{text:"Greet her and let her lead the conversation.",score:2}]},{id:18,dim:"PV",situation:"You are showing a diamond ring that costs ₹95,000 to a couple. The husband says: 'That is a lot of money for a stone.'",question:"How do you respond?",ft:true,options:[{text:"Tell him a diamond is an investment that holds value over time.",score:2},{text:"Explain the 4C specifications that justify the price point.",score:3},{text:"Acknowledge his point and show him two options — one at a lower price and explain exactly what changes between them.",score:4},{text:"Ask him what they are celebrating — then connect the price not to the stone but to the moment it represents and how long they will both look at it.",score:5},{text:"Tell him it is competitively priced compared to other stores for the same specification.",score:1}]},{id:19,dim:"ND",situation:"A couple is browsing and the husband said they are just looking for now. Ten minutes later they are still in the store, spending more time at the diamond necklace section.",question:"What do you do?",ft:false,options:[{text:"Approach and tell them those necklaces are part of a limited festive collection.",score:2},{text:"Leave them alone since they said they are just looking.",score:1},{text:"Walk over and ask if they would like to know more about any of the pieces they are looking at.",score:3},{text:"Approach and ask the wife if she would like to try one on — no pressure, just to see how it looks.",score:4},{text:"Go over, acknowledge they mentioned they are browsing, then ask if there is a particular occasion coming up that brought them to the diamond section specifically.",score:5}]},{id:20,dim:"TE",situation:"A customer says he found a diamond online with the same specifications as the one you are showing — same carat, cut, color, clarity — for ₹8,000 less. He asks why he should pay more.",question:"What do you say?",ft:true,options:[{text:"Tell him online prices are often misleading and the certification may not be genuine.",score:1},{text:"Match the price or offer a discount to retain the sale.",score:2},{text:"Acknowledge the price difference honestly, then explain the specific differences — after-sales service, physical verification, the buying experience — and let him decide what matters to him.",score:5},{text:"Explain that same specifications do not always mean the same stone — cut grade is a range and light performance can vary significantly.",score:4},{text:"Tell him the store's reputation, certification process, and after-sales support justify the price difference.",score:3}]},{id:21,dim:"EI",situation:"A customer has been in the store for 40 minutes. She has tried on six pieces. You can tell she is getting fatigued and slightly frustrated. She says: 'I don't know, nothing is feeling right.'",question:"What do you do?",ft:true,options:[{text:"Show her two more options that you think are stronger than what she has seen.",score:2},{text:"Suggest she take a short break, offer water, and then come back to the two she spent the most time with.",score:4},{text:"Ask her to tell you what was closest to right from what she has seen so far — even if not perfect.",score:5},{text:"Tell her the first piece she tried on seemed to get the most reaction from her.",score:3},{text:"Ask if she would like to come back another day with a fresh perspective.",score:1}]},{id:22,dim:"CS",situation:"A customer's husband calls while she is about to finalize a purchase. After the call she seems hesitant and says 'let me check with him first.'",question:"What do you do?",ft:false,options:[{text:"Tell her the piece is popular and may not be available if she comes back later.",score:1},{text:"Offer to put it on hold for 24 hours so there is no pressure.",score:3},{text:"Ask if there is something specific her husband might want to know about the piece — you could help her explain it to him.",score:5},{text:"Respect her decision and hand her the product details so she can share them with her husband.",score:4},{text:"Ask her what her own feeling is about the piece, separate from the call.",score:2}]},{id:23,dim:"RO",situation:"A loyal customer calls to say the clasp on a necklace she bought six months ago has broken. She is clearly upset. This is not a manufacturing defect — it appears to be wear and tear.",question:"How do you handle it?",ft:true,options:[{text:"Tell her wear and tear is not covered under warranty and she will need to pay for the repair.",score:1},{text:"Ask her to bring it in and tell her you will look at it and see what can be done.",score:3},{text:"Apologize, ask her to bring it in, and commit to fixing it at no charge — a loyal customer's goodwill is worth more than a repair cost.",score:4},{text:"Acknowledge her frustration, tell her to bring it in, and regardless of warranty, find a way to make it right — then use the visit to reconnect with her properly.",score:5},{text:"Tell her you will check with the manager and call her back.",score:2}]},{id:24,dim:"PV",situation:"A customer is about to buy a diamond pendant. She seems happy with the choice. She has not asked any questions about the stone quality.",question:"Do you explain the certificate and stone details or let the sale close naturally?",ft:true,options:[{text:"Let it close — she is happy and you do not want to introduce doubt.",score:1},{text:"Briefly mention the certification at billing as a reassurance point.",score:3},{text:"Walk her through the certificate — not to sell harder but because an informed customer is a more confident customer and more likely to return.",score:5},{text:"Ask her if she would like to know about the stone before you wrap it up — keeping it her choice.",score:4},{text:"Mention the IGI certification and tell her it guarantees authenticity.",score:2}]},{id:25,dim:"CA",situation:"You are on the floor during a quiet afternoon. A middle-aged man walks in, glances at the display cases, and does not make eye contact with you. He does not ask for help.",question:"What is your first move?",ft:false,options:[{text:"Walk up and introduce yourself and tell him about the current offers.",score:1},{text:"Watch from a distance — if he wants help he will ask.",score:2},{text:"After a minute, walk close enough to be available and give a brief, non-pushy acknowledgment that you are there if he needs anything.",score:3},{text:"Wait until he lingers at a particular case, then approach and ask what he is looking at — keeping it about the piece, not about making a sale.",score:4},{text:"Observe which section he gravitates to, give him a comfortable minute, then approach with an open question about what brings him in today — no product pitch yet.",score:5}]}];
+
+// ── PERSONA DATA ──────────────────────────────────────────────
+const PERSONA={
+  1:{name:"Product Pusher",range:"< 1.25",color:"#c4a882",
+    desc:"Your interactions are primarily driven by product features and offers. Customers tend to experience the interaction as transactional. The good news — recognizing this is the first and most important step.",
+    strengths:["You know the product range well","You can present price points and offers confidently","You keep interactions efficient"],
+    gaps:["Start conversations with a question, not a product","Build space for customers to tell you what they actually need","Shift focus from the sale to the person making it"]},
+  2:{name:"Transaction Achiever",range:"1.26–1.75",color:"#a8896a",
+    desc:"You engage professionally and understand basic needs. Your success is driven by volume. The next shift is going deeper — beyond budget and occasion to what the customer truly values.",
+    strengths:["You engage politely and professionally","You understand occasion and budget basics","You know how to guide a conversation toward closure"],
+    gaps:["Go beyond budget — explore personal style and identity","Present features as benefits specific to this customer's need","Build customer confidence in the decision, not just the product"]},
+  3:{name:"Problem Solver",range:"1.76–2.25",color:"#6b7e5e",
+    desc:"You ask meaningful questions, translate features into benefits, and begin building customer confidence. You are on a strong path. The next level is moving from solving problems to creating experiences.",
+    strengths:["You ask relevant questions before showing products","You connect product specs to customer benefits","You begin building customer confidence in decisions"],
+    gaps:["Move from reactive to proactive — understand style before they ask","Start reading emotional cues, not just stated needs","Build trust over time, not just in this transaction"]},
+  4:{name:"Expert Advisor",range:"2.26–2.75",color:"#2d6a5e",
+    desc:"You understand taste, curate choices to occasion and identity, and build trust through knowledge. You operate at a high level. The final shift is from being a knowledgeable advisor to a genuinely trusted guide.",
+    strengths:["You curate choices aligned to the customer's personal style","You build real trust through knowledge and credibility","You create a thoughtful, personalized experience"],
+    gaps:["Discover emotional drivers — not just occasion, but identity and meaning","Create moments that feel premium and memorable","Build a relationship with the customer that extends beyond this visit"]},
+  5:{name:"Trusted Advisor",range:"2.76+",color:"#094d59",
+    desc:"You act as a credible guide. You discover persona, identity, and emotional drivers. You create premium, personalized experiences and build lasting relationships. This training will sharpen and structure what you already do by instinct.",
+    strengths:["You discover emotional and identity-level needs naturally","You create genuinely personalized experiences","You build long-term relationships, not just transactions"],
+    gaps:["Document your approach so you can coach and mentor others","Apply this consistently across all customer types — especially difficult ones","Use this training to articulate and refine your instincts"]}
+};
+
+const DIM_LABELS={ND:"Needs Discovery",TE:"Transparency & Ethics",EI:"Emotional Intelligence",CS:"Closing Style",RO:"Relationship Orientation",PV:"Product-to-Value"};
+const DIM_COLORS={ND:"#094d59",TE:"#b5944a",EI:"#1D9E75",CS:"#378ADD",RO:"#7F77DD",PV:"#D85A30"};
+const IGI_CENTRES=["Mumbai","Delhi","Kolkata","Surat","Chennai","Pune","Bangalore","Hyderabad","Lucknow","Ahmedabad","Jaipur"];
+
+// ── STATE ─────────────────────────────────────────────────────
+let batchConfig={}, regData={}, answers=new Array(25).fill(null);
+let currentQ=0, timerInterval=null, timeLeft=1200, scores={};
+
+// ── INIT ──────────────────────────────────────────────────────
+window.onload=()=>loadConfig();
+
+async function loadConfig(){
+  try{
+    const r=await fetch(`${APPS_SCRIPT_URL}?action=getConfig`);
+    const d=await r.json();
+    if(d.ok){
+      batchConfig=d;
+      document.getElementById('batch-info').innerHTML=
+        `<strong>Batch:</strong> ${d.batchCode} &nbsp;|&nbsp; <strong>Centre:</strong> ${d.igiCentre} &nbsp;|&nbsp; <strong>Brand:</strong> ${d.jewelryBrand} &nbsp;|&nbsp; <strong>Type:</strong> ${d.assessmentType}`;
+      document.getElementById('r-igictr').value=d.igiCentre||'';
+      document.getElementById('r-batch').value=d.batchCode||'';
+      document.getElementById('r-brand').value=d.jewelryBrand||'';
+      showScreen('s-intro');
+    } else { showScreen('s-nobatch'); }
+  }catch(e){ showScreen('s-nobatch'); }
+}
+
+// ── SCREEN NAV ────────────────────────────────────────────────
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── REGISTRATION ──────────────────────────────────────────────
+async function submitReg(){
+  const name=document.getElementById('r-name').value.trim();
+  const mobile=document.getElementById('r-mobile').value.trim();
+  const brand=document.getElementById('r-brand').value.trim();
+  const branch=document.getElementById('r-branch').value.trim();
+  const desig=document.getElementById('r-desig').value;
+  const exp=document.getElementById('r-exp').value;
+  const errEl=document.getElementById('reg-error');
+  errEl.style.display='none';
+  if(!name||!mobile||!brand||!branch||!desig||!exp){errEl.textContent='Please fill all required fields.';errEl.style.display='block';return;}
+  if(!/^\d{10}$/.test(mobile)){errEl.textContent='Please enter a valid 10-digit mobile number.';errEl.style.display='block';return;}
+  try{
+    const r=await fetch(`${APPS_SCRIPT_URL}?action=checkMobile&mobile=${mobile}&batchCode=${batchConfig.batchCode}`);
+    const d=await r.json();
+    if(d.ok&&d.attempted){showScreen('s-blocked');return;}
+  }catch(e){}
+  regData={name,mobile,email:document.getElementById('r-email').value.trim(),
+    brand,branch,igiCentre:batchConfig.igiCentre||'',
+    batchCode:batchConfig.batchCode||'',designation:desig,experience:exp};
+  startAssessment();
+}
+
+// ── ASSESSMENT ────────────────────────────────────────────────
+function startAssessment(){
+  showScreen('s-question');
+  document.getElementById('prog').style.display='flex';
+  document.getElementById('timer').style.display='flex';
+  renderQ();
+  startTimer();
+}
+
+function startTimer(){
+  timerInterval=setInterval(()=>{
+    timeLeft--;
+    const m=Math.floor(timeLeft/60),s=timeLeft%60;
+    document.getElementById('timerVal').textContent=m+':'+(s<10?'0':'')+s;
+    if(timeLeft<=120)document.getElementById('timerVal').style.color='#d85a30';
+    if(timeLeft<=0){clearInterval(timerInterval);autoSubmit();}
+  },1000);
+}
+
+function autoSubmit(){
+  // Fill unanswered with median score 3
+  answers=answers.map((a,i)=>a===null?2:a);
+  calculateAndShowResults();
+}
+
+function renderQ(){
+  const q=QUESTIONS[currentQ];
+  const sel=answers[currentQ];
+  const pct=Math.round((currentQ/25)*100);
+  document.getElementById('progBar').style.width=pct+'%';
+  document.getElementById('progTxt').textContent=(currentQ+1)+' / 25';
+  const dimFull=DIM_LABELS[q.dim]||'';
+  let opts=q.options.map((o,i)=>`
+    <div class="opt ${sel===i?'sel':''}" onclick="selectOpt(${i})">
+      <div class="opt-dot"></div>
+      <div class="opt-text">${o.text}</div>
+    </div>`).join('');
+  document.getElementById('qCard').innerHTML=`
+    <div class="q-num">Question ${q.id} of 25</div>
+    <div class="q-situation">${q.situation}</div>
+    <div class="q-text">${q.question}</div>
+    <div class="options">${opts}</div>`;
+  document.getElementById('btnBack').disabled=currentQ===0;
+  document.getElementById('btnNext').disabled=sel===null;
+  document.getElementById('btnNext').textContent=currentQ===24?'See My Result →':'Next →';
+}
+
+function selectOpt(i){
+  answers[currentQ]=i;
+  document.getElementById('btnNext').disabled=false;
+  renderQ();
+}
+function prevQ(){if(currentQ>0){currentQ--;renderQ();}}
+function nextQ(){
+  if(currentQ<24){currentQ++;renderQ();}
+  else{clearInterval(timerInterval);calculateAndShowResults();}
+}
+
+// ── SCORING ───────────────────────────────────────────────────
+function calculateAndShowResults(){
+  document.getElementById('prog').style.display='none';
+  document.getElementById('timer').style.display='none';
+  showScreen('s-submitting');
+
+  const dims={ND:[],TE:[],EI:[],CS:[],RO:[],PV:[],CA:[]};
+  QUESTIONS.forEach((q,i)=>{
+    const optIdx=answers[i]===null?2:answers[i];
+    const sc=q.options[optIdx].score;
+    dims[q.dim].push(sc);
+  });
+
+  const avg=arr=>arr.reduce((a,b)=>a+b,0)/arr.length;
+  const nd=avg(dims.ND),te=avg(dims.TE),ei=avg(dims.EI);
+  const cs=avg(dims.CS),ro=avg(dims.RO),pv=avg(dims.PV);
+  const allScores=[...dims.ND,...dims.TE,...dims.EI,...dims.CS,...dims.RO,...dims.PV,...dims.CA];
+  const overall=avg(allScores);
+
+  const flag=dim=>(Math.max(...dim)-Math.min(...dim))>=3;
+  const flags={ND:flag(dims.ND),TE:flag(dims.TE),EI:flag(dims.EI),CS:flag(dims.CS),RO:flag(dims.RO),PV:flag(dims.PV)};
+  const flagCount=Object.values(flags).filter(Boolean).length;
+
+  scores={nd,te,ei,cs,ro,pv,overall,flags,flagCount,
+    persona:getPersona(overall),dims,allScores};
+
+  setTimeout(()=>renderResults(),800);
+}
+
+function getPersona(score){
+  if(score<1.25)return 1;
+  if(score<=1.75)return 2;
+  if(score<=2.25)return 3;
+  if(score<=2.75)return 4;
+  return 5;
+}
+
+function renderResults(){
+  showScreen('s-results');
+  const p=PERSONA[scores.persona];
+  document.getElementById('rPersona').textContent=p.name;
+  document.getElementById('rScore').textContent=scores.overall.toFixed(2);
+  document.getElementById('rDesc').textContent=p.desc;
+
+  // Scale
+  ['seg0','seg1','seg2','seg3','seg4'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    el.classList.remove('active');
+    el.style.opacity=i===(scores.persona-1)?'1':'0.35';
+  });
+  document.getElementById('seg'+(scores.persona-1)).classList.add('active');
+
+  // Dimensions
+  const dimData=[
+    {code:'ND',val:scores.nd},{code:'TE',val:scores.te},{code:'EI',val:scores.ei},
+    {code:'CS',val:scores.cs},{code:'RO',val:scores.ro},{code:'PV',val:scores.pv}
+  ];
+  const best=dimData.reduce((a,b)=>b.val>a.val?b:a);
+  const weak=dimData.reduce((a,b)=>b.val<a.val?b:a);
+  document.getElementById('dimGrid').innerHTML=dimData.map(d=>{
+    const pLevel=PERSONA[getPersona(d.val)].name;
+    const isBest=d.code===best.code,isWeak=d.code===weak.code;
+    const barPct=Math.round(((d.val-1)/4)*100);
+    return `<div class="dim-card ${isBest?'best':isWeak?'weak':''}">
+      <div class="dim-name">${DIM_LABELS[d.code]}</div>
+      <div class="dim-bar-outer"><div class="dim-bar-inner" style="width:${barPct}%;background:${DIM_COLORS[d.code]}"></div></div>
+      <div class="dim-score-row">
+        <span class="dim-score">${d.val.toFixed(2)}</span>
+        <span class="dim-persona" style="background:${DIM_COLORS[d.code]}22;color:${DIM_COLORS[d.code]}">${pLevel}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Flags
+  if(scores.flagCount>=2){
+    const flaggedDims=Object.entries(scores.flags).filter(([,v])=>v).map(([k])=>DIM_LABELS[k]).join(', ');
+    document.getElementById('flagCard').style.display='block';
+    document.getElementById('flagMsg').textContent=`Your responses varied significantly on: ${flaggedDims}. This often means your behavior in these areas depends heavily on the customer or context. Your trainer will explore this with you during the reflection session — it is completely normal and is actually useful information.`;
+  }
+
+  // Strengths / Gaps
+  document.getElementById('sgStrengths').innerHTML=p.strengths.map(s=>`<div class="sg-item s">${s}</div>`).join('');
+  document.getElementById('sgGaps').innerHTML=p.gaps.map(g=>`<div class="sg-item g">${g}</div>`).join('');
+}
+
+// ── FINAL SUBMIT ──────────────────────────────────────────────
+async function finalSubmit(){
+  const commitment=document.getElementById('commitment').value.trim();
+  document.getElementById('btnFinalSubmit').disabled=true;
+  document.getElementById('btnFinalSubmit').textContent='Saving…';
+  const payload={
+    batchCode:regData.batchCode, igiCentre:regData.igiCentre,
+    jewelryBrand:regData.brand, storeBranch:regData.branch,
+    name:regData.name, mobile:regData.mobile, email:regData.email,
+    designation:regData.designation, experience:regData.experience,
+    ...Object.fromEntries(QUESTIONS.map((q,i)=>['q'+q.id,q.options[answers[i]===null?2:answers[i]].score])),
+    nd:scores.nd.toFixed(3),te:scores.te.toFixed(3),ei:scores.ei.toFixed(3),
+    cs:scores.cs.toFixed(3),ro:scores.ro.toFixed(3),pv:scores.pv.toFixed(3),
+    ca:(scores.dims.CA.reduce((a,b)=>a+b,0)/scores.dims.CA.length).toFixed(3),
+    overall:scores.overall.toFixed(3),persona:PERSONA[scores.persona].name,
+    nd_flag:scores.flags.ND?'Y':'N',te_flag:scores.flags.TE?'Y':'N',
+    ei_flag:scores.flags.EI?'Y':'N',cs_flag:scores.flags.CS?'Y':'N',
+    ro_flag:scores.flags.RO?'Y':'N',pv_flag:scores.flags.PV?'Y':'N',
+    consistency_overall:scores.flagCount>=2?'Y':'N',
+    commitment
+  };
+  try{
+    await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify(payload)});
+    document.getElementById('submit-confirm').style.display='block';
+    document.getElementById('btnFinalSubmit').style.display='none';
+  }catch(e){
+    document.getElementById('btnFinalSubmit').disabled=false;
+    document.getElementById('btnFinalSubmit').textContent='Retry Submit →';
+  }
+}
+</script>
+</body>
+</html>
