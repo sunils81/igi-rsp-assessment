@@ -377,15 +377,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Ar
       </ol>
     </div>
 
-    <div class="commit-card">
-      <h3>My 45-day commitment</h3>
-      <p>Based on your reflection, write one specific behavior you will practice starting today.</p>
-      <textarea class="commit-ta" id="commitment" placeholder="I will…"></textarea>
-    </div>
-
     <div class="result-actions">
-      <button class="btn-print" onclick="window.print()">🖨 Print result</button>
-      <button class="btn-submit" id="btnFinalSubmit" onclick="finalSubmit()">Save & Submit →</button>
+      <button class="btn-print" onclick="window.print()">🖨 Print Result</button>
     </div>
     <div id="submit-confirm" style="text-align:center;margin-top:12px;font-size:12px;color:var(--success);display:none">
       ✓ Your result has been saved. Your trainer has your report.
@@ -591,12 +584,14 @@ function nextQ(){
 
 // ── SCORING ───────────────────────────────────────────────────
 function calculateAndShowResults(){
-  const assessmentEndTime = Date.now();
-  const timeTakenSeconds = Math.round((assessmentEndTime - (assessmentStartTime||assessmentEndTime)) / 1000);
-  const speedFlag = timeTakenSeconds < 180 ? 'Y' : 'N'; // under 3 min = flagged (25 Qs x 7s min)
+  // Calculate time taken two ways and use the more accurate one
+  const timerBasedTime = 900 - timeLeft; // most reliable — counts down from 900
+  const clockBasedTime = assessmentStartTime ? Math.round((Date.now() - assessmentStartTime) / 1000) : timerBasedTime;
+  const timeTakenSeconds = timerBasedTime > 0 ? timerBasedTime : clockBasedTime;
+  const speedFlag = timeTakenSeconds < 180 ? 'Y' : 'N'; // under 3 min flagged
   scores.timeTakenSeconds = timeTakenSeconds;
   scores.speedFlag = speedFlag;
-  console.log('Time taken:', timeTakenSeconds, 'seconds | Speed flag:', speedFlag);
+  console.log('Time taken:', timeTakenSeconds, 's (timer-based:', timerBasedTime, 'clock-based:', clockBasedTime, ') | SpeedFlag:', speedFlag);
   document.getElementById('prog').style.display='none';
   document.getElementById('timer').style.display='none';
   showScreen('s-submitting');
@@ -621,7 +616,39 @@ function calculateAndShowResults(){
   scores={nd,te,ei,cs,ro,pv,overall,flags,flagCount,
     persona:getPersona(overall),dims,allScores};
 
+  // Auto submit immediately — no manual button needed
+  autoSubmit();
   setTimeout(()=>renderResults(),800);
+}
+
+function autoSubmit(){
+  if(submitted){ return; }
+  submitted = true;
+  const payload={
+    batchCode:regData.batchCode, igiCentre:regData.igiCentre,
+    jewelryBrand:regData.brand, storeBranch:regData.branch,
+    name:regData.name, mobile:regData.mobile, email:regData.email,
+    designation:regData.designation, experience:regData.experience,
+    ...Object.fromEntries(QUESTIONS.map((q,i)=>['q'+q.id,q.options[answers[i]===null?2:answers[i]].score])),
+    nd:scores.nd.toFixed(3),te:scores.te.toFixed(3),ei:scores.ei.toFixed(3),
+    cs:scores.cs.toFixed(3),ro:scores.ro.toFixed(3),pv:scores.pv.toFixed(3),
+    ca:(scores.dims.CA.reduce((a,b)=>a+b,0)/scores.dims.CA.length).toFixed(3),
+    overall:scores.overall.toFixed(3),persona:PERSONA[scores.persona].name,
+    nd_flag:scores.flags.ND?'Y':'N',te_flag:scores.flags.TE?'Y':'N',
+    ei_flag:scores.flags.EI?'Y':'N',cs_flag:scores.flags.CS?'Y':'N',
+    ro_flag:scores.flags.RO?'Y':'N',pv_flag:scores.flags.PV?'Y':'N',
+    consistency_overall:scores.flagCount>=2?'Y':'N',
+    commitment:'',
+    time_taken_seconds:scores.timeTakenSeconds||0,
+    speed_flag:scores.speedFlag||'N'
+  };
+  const encoded = encodeURIComponent(JSON.stringify(payload));
+  const getUrl = APPS_SCRIPT_URL + '?action=submitData&data=' + encoded;
+  const script = document.createElement('script');
+  script.src = getUrl + '&cb=' + Date.now();
+  document.head.appendChild(script);
+  setTimeout(()=>{ try{document.head.removeChild(script);}catch(e){} },5000);
+  console.log('Auto-submitted. Time:', scores.timeTakenSeconds, 's | SpeedFlag:', scores.speedFlag);
 }
 
 function getPersona(score){
@@ -716,50 +743,7 @@ function renderResults(){
 }
 
 // ── FINAL SUBMIT ──────────────────────────────────────────────
-async function finalSubmit(){
-  if(submitted){ console.log('Already submitted — ignoring duplicate call'); return; }
-  submitted = true;
-  console.log('finalSubmit called');
-  const commitment=document.getElementById('commitment').value.trim();
-  document.getElementById('btnFinalSubmit').disabled=true;
-  document.getElementById('btnFinalSubmit').textContent='Saving…';
-  const payload={
-    batchCode:regData.batchCode, igiCentre:regData.igiCentre,
-    jewelryBrand:regData.brand, storeBranch:regData.branch,
-    name:regData.name, mobile:regData.mobile, email:regData.email,
-    designation:regData.designation, experience:regData.experience,
-    ...Object.fromEntries(QUESTIONS.map((q,i)=>['q'+q.id,q.options[answers[i]===null?2:answers[i]].score])),
-    nd:scores.nd.toFixed(3),te:scores.te.toFixed(3),ei:scores.ei.toFixed(3),
-    cs:scores.cs.toFixed(3),ro:scores.ro.toFixed(3),pv:scores.pv.toFixed(3),
-    ca:(scores.dims.CA.reduce((a,b)=>a+b,0)/scores.dims.CA.length).toFixed(3),
-    overall:scores.overall.toFixed(3),persona:PERSONA[scores.persona].name,
-    nd_flag:scores.flags.ND?'Y':'N',te_flag:scores.flags.TE?'Y':'N',
-    ei_flag:scores.flags.EI?'Y':'N',cs_flag:scores.flags.CS?'Y':'N',
-    ro_flag:scores.flags.RO?'Y':'N',pv_flag:scores.flags.PV?'Y':'N',
-    consistency_overall:scores.flagCount>=2?'Y':'N',
-    commitment,
-    time_taken_seconds:scores.timeTakenSeconds||0,
-    speed_flag:scores.speedFlag||'N'
-  };
-  try{
-    // Use GET with encoded data
-    const encoded = encodeURIComponent(JSON.stringify(payload));
-    const getUrl = APPS_SCRIPT_URL + '?action=submitData&data=' + encoded;
-    console.log('Submitting URL length:', getUrl.length);
-    
-    // Script tag injection — confirmed working, fires single GET request
-    const script = document.createElement('script');
-    script.src = getUrl + '&cb=' + Date.now();
-    document.head.appendChild(script);
-    setTimeout(() => { try { document.head.removeChild(script); } catch(e){} }, 5000);
-    console.log('Submission fired, URL length:', getUrl.length);
-    document.getElementById('submit-confirm').style.display='block';
-    document.getElementById('btnFinalSubmit').style.display='none';
-  }catch(e){
-    document.getElementById('btnFinalSubmit').disabled=false;
-    document.getElementById('btnFinalSubmit').textContent='Retry Submit →';
-  }
-}
+// finalSubmit removed — auto-submit now handles this
 </script>
 </body>
 </html>
