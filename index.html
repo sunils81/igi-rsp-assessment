@@ -92,7 +92,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Ar
 
 /* ── Results ── */
 .result-hero{background:var(--teal);border-radius:12px;padding:32px;text-align:center;color:#fff;margin-bottom:16px}
-.result-hero .rh-label{font-size:11px;color:#9fddc8;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.result-hero .rh-label{font-size:12px;color:#9fddc8;letter-spacing:.5px;margin-bottom:6px;font-weight:500}
 .result-hero .rh-persona{font-size:30px;font-weight:700;color:var(--gold);margin-bottom:4px}
 .result-hero .rh-score{font-size:52px;font-weight:700;line-height:1}
 .result-hero .rh-score-sub{font-size:12px;color:#9fddc8;margin-bottom:14px}
@@ -328,7 +328,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Ar
   <!-- RESULTS -->
   <div id="s-results" class="screen">
     <div class="result-hero">
-      <div class="rh-label">Your Sales Persona</div>
+      <div class="rh-label" id="rGreeting">Your Sales Persona</div>
       <div class="rh-persona" id="rPersona"></div>
       <div class="rh-score" id="rScore"></div>
       <div class="rh-score-sub">average score across 25 situations</div>
@@ -344,7 +344,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Ar
         <div class="scale-seg" id="seg3" style="background:#2d6a5e">Expert Advisor</div>
         <div class="scale-seg" id="seg4" style="background:#094d59">Trusted Advisor</div>
       </div>
-      <div class="scale-labels"><span>&lt;1.75</span><span>1.76–2.25</span><span>2.26–2.75</span><span>2.76–3.50</span><span>3.51+</span></div>
+      <div class="scale-labels"><span>&lt;1.75</span><span>1.76–2.25</span><span>2.26–2.75</span><span>2.76–3.75</span><span>3.76+</span></div>
     </div>
 
     <div style="background:#fff;border-radius:10px;padding:18px 22px;margin-bottom:14px;box-shadow:0 1px 8px rgba(0,0,0,.06)">
@@ -407,19 +407,19 @@ const PERSONA={
     desc:"Your interactions are primarily driven by product features and offers. Customers tend to experience the interaction as transactional. The good news — recognizing this is the first and most important step.",
     strengths:["You know the product range well","You can present price points and offers confidently","You keep interactions efficient"],
     gaps:["Start conversations with a question, not a product","Build space for customers to tell you what they actually need","Shift focus from the sale to the person making it"]},
-  2:{name:"Transaction Achiever",range:"2.76–3.50",color:"#a8896a",
+  2:{name:"Transaction Achiever",range:"2.76–3.75",color:"#a8896a",
     desc:"You engage professionally and understand basic needs. Your success is driven by volume. The next shift is going deeper — beyond budget and occasion to what the customer truly values.",
     strengths:["You engage politely and professionally","You understand occasion and budget basics","You know how to guide a conversation toward closure"],
     gaps:["Go beyond budget — explore personal style and identity","Present features as benefits specific to this customer's need","Build customer confidence in the decision, not just the product"]},
-  3:{name:"Problem Solver",range:"2.76–3.50",color:"#6b7e5e",
+  3:{name:"Problem Solver",range:"2.76–3.75",color:"#6b7e5e",
     desc:"You ask meaningful questions, translate features into benefits, and begin building customer confidence. You are on a strong path. The next level is moving from solving problems to creating experiences.",
     strengths:["You ask relevant questions before showing products","You connect product specs to customer benefits","You begin building customer confidence in decisions"],
     gaps:["Move from reactive to proactive — understand style before they ask","Start reading emotional cues, not just stated needs","Build trust over time, not just in this transaction"]},
-  4:{name:"Expert Advisor",range:"2.76–3.50",color:"#2d6a5e",
+  4:{name:"Expert Advisor",range:"2.76–3.75",color:"#2d6a5e",
     desc:"You understand taste, curate choices to occasion and identity, and build trust through knowledge. You operate at a high level. The final shift is from being a knowledgeable advisor to a genuinely trusted guide.",
     strengths:["You curate choices aligned to the customer's personal style","You build real trust through knowledge and credibility","You create a thoughtful, personalized experience"],
     gaps:["Discover emotional drivers — not just occasion, but identity and meaning","Create moments that feel premium and memorable","Build a relationship with the customer that extends beyond this visit"]},
-  5:{name:"Trusted Advisor",range:"3.51+",color:"#094d59",
+  5:{name:"Trusted Advisor",range:"3.76+",color:"#094d59",
     desc:"You act as a credible guide. You discover persona, identity, and emotional drivers. You create premium, personalized experiences and build lasting relationships. This training will sharpen and structure what you already do by instinct.",
     strengths:["You discover emotional and identity-level needs naturally","You create genuinely personalized experiences","You build long-term relationships, not just transactions"],
     gaps:["Document your approach so you can coach and mentor others","Apply this consistently across all customer types — especially difficult ones","Use this training to articulate and refine your instincts"]}
@@ -593,9 +593,10 @@ function nextQ(){
 function calculateAndShowResults(){
   const assessmentEndTime = Date.now();
   const timeTakenSeconds = Math.round((assessmentEndTime - (assessmentStartTime||assessmentEndTime)) / 1000);
-  const speedFlag = timeTakenSeconds < 240 ? 'Y' : 'N'; // under 4 min = flagged
+  const speedFlag = timeTakenSeconds < 180 ? 'Y' : 'N'; // under 3 min = flagged (25 Qs x 7s min)
   scores.timeTakenSeconds = timeTakenSeconds;
   scores.speedFlag = speedFlag;
+  console.log('Time taken:', timeTakenSeconds, 'seconds | Speed flag:', speedFlag);
   document.getElementById('prog').style.display='none';
   document.getElementById('timer').style.display='none';
   showScreen('s-submitting');
@@ -627,7 +628,7 @@ function getPersona(score){
   if(score<1.75)return 1;
   if(score<=2.25)return 2;
   if(score<=2.75)return 3;
-  if(score<=3.50)return 4;
+  if(score<=3.75)return 4;
   return 5;
 }
 
@@ -637,6 +638,14 @@ function renderResults(){
   document.getElementById('rPersona').textContent=p.name;
   document.getElementById('rScore').textContent=scores.overall.toFixed(2);
   document.getElementById('rDesc').textContent=p.desc;
+  // Personalise with name
+  const firstName = (regData.name||'').trim().split(' ')[0] || '';
+  if(firstName){
+    document.getElementById('rGreeting').textContent = firstName + ' — Your Sales Persona';
+  }
+  // Add name to strengths heading
+  const sgHeader = document.querySelector('.sg-card h3');
+  if(sgHeader && firstName) sgHeader.textContent = 'What ' + firstName + ' is doing well';
 
   // Scale
   ['seg0','seg1','seg2','seg3','seg4'].forEach((id,i)=>{
@@ -684,10 +693,16 @@ function renderResults(){
   const mins = Math.floor(timeTaken/60);
   const secs = timeTaken % 60;
   const timeStr = mins + 'm ' + secs + 's';
-  if(scores.speedFlag === 'Y'){
+  const sf = scores.speedFlag || 'N';
+  const tt = scores.timeTakenSeconds || 0;
+  const tMins = Math.floor(tt/60);
+  const tSecs = tt % 60;
+  const tStr = tMins + 'm ' + tSecs + 's';
+  console.log('Speed flag:', sf, 'Time:', tt, 'seconds');
+  if(sf === 'Y'){
     document.getElementById('speedCard').style.display='block';
     document.getElementById('speedMsg').textContent=
-      `This assessment was completed in ${timeStr}. At this pace, there may not have been enough time to read each situation carefully. Your trainer will review your responses with you to ensure the results reflect your actual approach on the floor.`;
+      `Assessment completed in ${tStr} — this is too fast to read each situation carefully (minimum expected: 3 minutes). Your trainer will review your responses during the reflection session to verify they reflect your actual floor behavior.`;
   } else {
     document.getElementById('speedCard').style.display='none';
   }
