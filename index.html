@@ -124,6 +124,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Ar
 
 /* Consistency flag */
 .flag-card{background:#fff8e6;border:1px solid #f59e0b;border-radius:10px;padding:16px 18px;margin-bottom:14px}
+.speed-flag{background:#fdf0f0;border:1px solid #e07070}
+.speed-flag h3{color:#c0392b !important}
 .flag-card h3{font-size:12px;font-weight:700;color:#92400e;margin-bottom:6px}
 .flag-card p{font-size:12px;color:#78350f;line-height:1.6}
 
@@ -355,6 +357,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Ar
       <p id="flagMsg"></p>
     </div>
 
+    <div id="speedCard" style="display:none" class="flag-card speed-flag">
+      <h3>⚡ Trainer note — assessment completed very quickly</h3>
+      <p id="speedMsg"></p>
+    </div>
+
     <div class="sg-grid">
       <div class="sg-card"><h3>What you are doing well</h3><div id="sgStrengths"></div></div>
       <div class="sg-card"><h3>Opportunities to grow</h3><div id="sgGaps"></div></div>
@@ -463,7 +470,7 @@ const IGI_CENTRES=["Mumbai","Delhi","Kolkata","Surat","Chennai","Pune","Bangalor
 // ── STATE ─────────────────────────────────────────────────────
 let batchConfig={}, regData={}, answers=new Array(25).fill(null);
 let answerScores=new Array(25).fill(null);
-let currentQ=0, timerInterval=null, timeLeft=900, scores={};
+let currentQ=0, timerInterval=null, timeLeft=900, scores={}, assessmentStartTime=null;
 
 // ── INIT ──────────────────────────────────────────────────────
 window.onload=()=>loadConfig();
@@ -515,6 +522,7 @@ async function submitReg(){
 
 // ── ASSESSMENT ────────────────────────────────────────────────
 function startAssessment(){
+  assessmentStartTime = Date.now();
   showScreen('s-question');
   document.getElementById('prog').style.display='flex';
   document.getElementById('timer').style.display='flex';
@@ -583,6 +591,11 @@ function nextQ(){
 
 // ── SCORING ───────────────────────────────────────────────────
 function calculateAndShowResults(){
+  const assessmentEndTime = Date.now();
+  const timeTakenSeconds = Math.round((assessmentEndTime - (assessmentStartTime||assessmentEndTime)) / 1000);
+  const speedFlag = timeTakenSeconds < 240 ? 'Y' : 'N'; // under 4 min = flagged
+  scores.timeTakenSeconds = timeTakenSeconds;
+  scores.speedFlag = speedFlag;
   document.getElementById('prog').style.display='none';
   document.getElementById('timer').style.display='none';
   showScreen('s-submitting');
@@ -666,6 +679,22 @@ function renderResults(){
     document.getElementById('flagMsg').textContent=`Your responses varied significantly on: ${flaggedDims}. This often means your behavior in these areas depends heavily on the customer or context. Your trainer will explore this with you during the reflection session — it is completely normal and is actually useful information.`;
   }
 
+  // Speed flag
+  const timeTaken = scores.timeTakenSeconds || 0;
+  const mins = Math.floor(timeTaken/60);
+  const secs = timeTaken % 60;
+  const timeStr = mins + 'm ' + secs + 's';
+  if(scores.speedFlag === 'Y'){
+    document.getElementById('speedCard').style.display='block';
+    document.getElementById('speedMsg').textContent=
+      `This assessment was completed in ${timeStr}. At this pace, there may not have been enough time to read each situation carefully. Your trainer will review your responses with you to ensure the results reflect your actual approach on the floor.`;
+  } else {
+    document.getElementById('speedCard').style.display='none';
+  }
+
+  // Add time taken to results page subtitle
+  document.getElementById('rScore').title = 'Completed in ' + timeStr;
+
   // Strengths / Gaps
   document.getElementById('sgStrengths').innerHTML=p.strengths.map(s=>`<div class="sg-item s">${s}</div>`).join('');
   document.getElementById('sgGaps').innerHTML=p.gaps.map(g=>`<div class="sg-item g">${g}</div>`).join('');
@@ -690,7 +719,9 @@ async function finalSubmit(){
     ei_flag:scores.flags.EI?'Y':'N',cs_flag:scores.flags.CS?'Y':'N',
     ro_flag:scores.flags.RO?'Y':'N',pv_flag:scores.flags.PV?'Y':'N',
     consistency_overall:scores.flagCount>=2?'Y':'N',
-    commitment
+    commitment,
+    time_taken_seconds:scores.timeTakenSeconds||0,
+    speed_flag:scores.speedFlag||'N'
   };
   try{
     await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
