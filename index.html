@@ -470,7 +470,7 @@ const IGI_CENTRES=["Mumbai","Delhi","Kolkata","Surat","Chennai","Pune","Bangalor
 // ── STATE ─────────────────────────────────────────────────────
 let batchConfig={}, regData={}, answers=new Array(25).fill(null);
 let answerScores=new Array(25).fill(null);
-let currentQ=0, timerInterval=null, timeLeft=900, scores={}, assessmentStartTime=null;
+let currentQ=0, timerInterval=null, timeLeft=900, scores={}, assessmentStartTime=null, submitted=false;
 
 // ── INIT ──────────────────────────────────────────────────────
 window.onload=()=>loadConfig();
@@ -702,6 +702,8 @@ function renderResults(){
 
 // ── FINAL SUBMIT ──────────────────────────────────────────────
 async function finalSubmit(){
+  if(submitted){ console.log('Already submitted — ignoring duplicate call'); return; }
+  submitted = true;
   console.log('finalSubmit called');
   const commitment=document.getElementById('commitment').value.trim();
   document.getElementById('btnFinalSubmit').disabled=true;
@@ -730,21 +732,12 @@ async function finalSubmit(){
     const getUrl = APPS_SCRIPT_URL + '?action=submitData&data=' + encoded;
     console.log('Submitting URL length:', getUrl.length);
     
-    // Method 1: Script tag injection — bypasses CORS and CSP completely
+    // Script tag injection — confirmed working, fires single GET request
     const script = document.createElement('script');
-    script.src = getUrl + '&callback=IGI_CB_' + Date.now();
-    script.onerror = () => console.log('script tag fired (errors are normal for no-JSONP)');
+    script.src = getUrl + '&cb=' + Date.now();
     document.head.appendChild(script);
     setTimeout(() => { try { document.head.removeChild(script); } catch(e){} }, 5000);
-    console.log('Script tag GET fired');
-
-    // Method 2: Image tag as backup
-    const img = new Image();
-    img.src = getUrl;
-    console.log('Image GET fired');
-
-    // Method 3: fetch no-cors
-    fetch(getUrl, {mode:'no-cors'}).then(()=>console.log('fetch done')).catch(e=>console.log('fetch error:',e));
+    console.log('Submission fired, URL length:', getUrl.length);
     document.getElementById('submit-confirm').style.display='block';
     document.getElementById('btnFinalSubmit').style.display='none';
   }catch(e){
