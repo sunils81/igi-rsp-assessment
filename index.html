@@ -11,7 +11,7 @@
   --bg:#f5f0eb;--white:#ffffff;--text:#2c2c2a;--muted:#5f5e5a;
   --border:#e0d8ce;--light:#f9f5f0;--success:#1D9E75;--warn:#ba7517;
 }
-body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
 /* ── Header ── */
 .hdr{background:var(--teal);padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
@@ -26,9 +26,9 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
 .prog-outer{flex:1;height:5px;background:#d3cdc4;border-radius:3px}
 .prog-inner{height:5px;background:var(--gold);border-radius:3px;transition:width .4s}
 .prog-txt{font-size:11px;color:var(--muted);min-width:60px;text-align:right}
-.timer{background:#fff7f0;border-bottom:1px solid var(--border);padding:8px 24px;display:none;justify-content:flex-end;align-items:center;gap:6px}
-.timer-val{font-size:14px;font-weight:700;color:var(--teal)}
-.timer-lbl{font-size:11px;color:var(--muted)}
+.timer{background:#fff7f0;border-bottom:2px solid var(--gold);padding:10px 24px;display:none;justify-content:flex-end;align-items:center;gap:8px}
+.timer-val{font-size:20px;font-weight:800;color:var(--teal);letter-spacing:.5px}
+.timer-lbl{font-size:13px;color:var(--muted);font-weight:500}
 
 /* ── Container ── */
 .wrap{max-width:760px;margin:28px auto;padding:0 18px}
@@ -38,12 +38,12 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
 
 /* ── Intro ── */
 .intro-title{font-size:24px;font-weight:700;color:var(--teal);margin-bottom:6px}
-.intro-sub{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.6}
+.intro-sub{font-size:14px;color:var(--muted);margin-bottom:22px;line-height:1.6}
 .inst-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
 .inst-box{background:var(--light);border-radius:8px;padding:12px 14px}
 .inst-label{font-size:10px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px}
-.inst-val{font-size:12px;color:var(--text);line-height:1.5}
-.honest-note{background:#e8f5f2;border-left:3px solid var(--success);padding:12px 14px;border-radius:0 8px 8px 0;margin-bottom:22px;font-size:12px;color:#0f6e56;line-height:1.6}
+.inst-val{font-size:13px;color:var(--text);line-height:1.5}
+.honest-note{background:#e8f5f2;border-left:3px solid var(--success);padding:12px 14px;border-radius:0 8px 8px 0;margin-bottom:22px;font-size:13px;color:#0f6e56;line-height:1.6}
 .btn-primary{background:var(--teal);color:#fff;border:none;padding:13px 32px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:.3px;transition:background .15s}
 .btn-primary:hover{background:var(--teal2)}
 .btn-secondary{background:#fff;color:var(--teal);border:1.5px solid var(--teal);padding:11px 24px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
@@ -69,18 +69,18 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
 .no-batch-warn{background:#fff3e0;border:1px solid #f59e0b;border-radius:8px;padding:14px;text-align:center;font-size:13px;color:#92400e;margin-bottom:16px}
 
 /* ── Questions ── */
-.q-num{font-size:10px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
+.q-num{font-size:11px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
 .q-dim{display:inline-block;font-size:10px;background:rgba(9,77,89,.08);color:var(--teal);padding:2px 8px;border-radius:10px;margin-bottom:12px}
-.q-situation{font-size:12px;color:var(--muted);font-style:italic;background:var(--light);border-left:3px solid var(--gold);padding:10px 14px;border-radius:0 6px 6px 0;margin-bottom:14px;line-height:1.6}
-.q-text{font-size:15px;font-weight:600;color:var(--text);margin-bottom:18px;line-height:1.5}
+.q-situation{font-size:14px;color:var(--muted);font-style:italic;background:var(--light);border-left:3px solid var(--gold);padding:10px 14px;border-radius:0 6px 6px 0;margin-bottom:14px;line-height:1.6}
+.q-text{font-size:19px;font-weight:700;color:#000000;margin-bottom:18px;line-height:1.5;letter-spacing:-0.2px}
 .options{display:flex;flex-direction:column;gap:9px}
-.opt{display:flex;align-items:flex-start;gap:11px;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s;background:#fff}
+.opt{display:flex;align-items:flex-start;gap:11px;padding:14px 16px;border:1.5px solid #ccc4b8;border-radius:8px;cursor:pointer;transition:all .15s;background:#fff}
 .opt:hover{border-color:var(--teal);background:#f0faf7}
 .opt.sel{border-color:var(--teal);background:#e8f5f2}
 .opt-dot{width:18px;height:18px;border-radius:50%;border:2px solid #d3cdc4;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .opt.sel .opt-dot{border-color:var(--teal);background:var(--teal)}
 .opt.sel .opt-dot::after{content:'';width:6px;height:6px;background:#fff;border-radius:50%}
-.opt-text{font-size:13px;color:var(--text);line-height:1.5}
+.opt-text{font-size:15px;color:#1a1a18;line-height:1.5;font-weight:500}
 
 /* ── Nav ── */
 .nav{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
@@ -108,7 +108,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
 .scale-labels span{flex:1;text-align:center}
 
 /* Dimension breakdown */
-.dim-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.dim-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:14px}
 .dim-card{background:#fff;border-radius:10px;padding:14px 16px;box-shadow:0 1px 8px rgba(0,0,0,.06)}
 .dim-card.best{border-left:3px solid var(--success)}
 .dim-card.weak{border-left:3px solid var(--warn)}
@@ -116,6 +116,9 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
 .dim-bar-outer{height:6px;background:var(--border);border-radius:3px;margin-bottom:6px}
 .dim-bar-inner{height:6px;border-radius:3px;transition:width .8s}
 .dim-score-row{display:flex;justify-content:space-between;align-items:center}
+.dim-what{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:6px;font-style:italic}
+.dim-suggest{font-size:11px;color:var(--text);line-height:1.5;margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
+.dim-suggest strong{color:var(--teal);font-size:10px;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:2px}
 .dim-score{font-size:16px;font-weight:700;color:var(--text)}
 .dim-persona{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
 
@@ -159,7 +162,19 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
 @media(max-width:600px){
   .inst-grid,.reg-grid,.dim-grid,.sg-grid{grid-template-columns:1fr}
   .field.full{grid-column:1}
-  .card{padding:20px}
+  .card{padding:16px}
+  .q-text{font-size:17px;font-weight:800}
+  .opt-text{font-size:14px}
+  .q-situation{font-size:13px}
+  .opt{padding:13px 14px}
+  .timer-val{font-size:18px}
+  .result-hero .rh-persona{font-size:22px}
+  .result-hero .rh-score{font-size:40px}
+  .wrap{padding:0 12px}
+  .hdr{padding:12px 16px}
+  .hdr-title{font-size:14px}
+  .nav{gap:8px}
+  .nav-back,.nav-next{padding:10px 16px;font-size:13px}
 }
 @media print{
   .hdr,.prog,.timer,.nav,.result-actions{display:none!important}
@@ -180,7 +195,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
   <div class="hdr-badge">Sales Persona Discovery</div>
 </div>
 <div class="prog" id="prog"><div class="prog-outer"><div class="prog-inner" id="progBar" style="width:0%"></div></div><div class="prog-txt" id="progTxt">0 / 25</div></div>
-<div class="timer" id="timer"><span style="font-size:15px">⏱</span><span class="timer-val" id="timerVal">20:00</span><span class="timer-lbl">remaining</span></div>
+<div class="timer" id="timer"><span style="font-size:15px">⏱</span><span class="timer-val" id="timerVal">15:00</span><span class="timer-lbl">remaining</span></div>
 
 <div class="wrap">
 
@@ -209,7 +224,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
       </div>
       <div class="inst-grid">
         <div class="inst-box"><div class="inst-label">Questions</div><div class="inst-val">25 retail floor situations</div></div>
-        <div class="inst-box"><div class="inst-label">Time allowed</div><div class="inst-val">20 minutes</div></div>
+        <div class="inst-box"><div class="inst-label">Time allowed</div><div class="inst-val">15 minutes</div></div>
         <div class="inst-box"><div class="inst-label">Attempts</div><div class="inst-val">One attempt only per batch</div></div>
         <div class="inst-box"><div class="inst-label">After completion</div><div class="inst-val">Your Sales Persona result and a personalised breakdown</div></div>
       </div>
@@ -327,7 +342,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
         <div class="scale-seg" id="seg3" style="background:#2d6a5e">Expert Advisor</div>
         <div class="scale-seg" id="seg4" style="background:#094d59">Trusted Advisor</div>
       </div>
-      <div class="scale-labels"><span>&lt;1.25</span><span>1.26–1.75</span><span>1.76–2.25</span><span>2.26–2.75</span><span>2.76+</span></div>
+      <div class="scale-labels"><span>&lt;1.75</span><span>1.76–2.25</span><span>2.26–2.75</span><span>2.76–3.50</span><span>3.51+</span></div>
     </div>
 
     <div style="background:#fff;border-radius:10px;padding:18px 22px;margin-bottom:14px;box-shadow:0 1px 8px rgba(0,0,0,.06)">
@@ -381,23 +396,23 @@ const QUESTIONS=[{id:1,dim:"ND",situation:"A well-dressed woman walks in alone. 
 
 // ── PERSONA DATA ──────────────────────────────────────────────
 const PERSONA={
-  1:{name:"Product Pusher",range:"< 1.25",color:"#c4a882",
+  1:{name:"Product Pusher",range:"< 1.75",color:"#c4a882",
     desc:"Your interactions are primarily driven by product features and offers. Customers tend to experience the interaction as transactional. The good news — recognizing this is the first and most important step.",
     strengths:["You know the product range well","You can present price points and offers confidently","You keep interactions efficient"],
     gaps:["Start conversations with a question, not a product","Build space for customers to tell you what they actually need","Shift focus from the sale to the person making it"]},
-  2:{name:"Transaction Achiever",range:"1.26–1.75",color:"#a8896a",
+  2:{name:"Transaction Achiever",range:"2.76–3.50",color:"#a8896a",
     desc:"You engage professionally and understand basic needs. Your success is driven by volume. The next shift is going deeper — beyond budget and occasion to what the customer truly values.",
     strengths:["You engage politely and professionally","You understand occasion and budget basics","You know how to guide a conversation toward closure"],
     gaps:["Go beyond budget — explore personal style and identity","Present features as benefits specific to this customer's need","Build customer confidence in the decision, not just the product"]},
-  3:{name:"Problem Solver",range:"1.76–2.25",color:"#6b7e5e",
+  3:{name:"Problem Solver",range:"2.76–3.50",color:"#6b7e5e",
     desc:"You ask meaningful questions, translate features into benefits, and begin building customer confidence. You are on a strong path. The next level is moving from solving problems to creating experiences.",
     strengths:["You ask relevant questions before showing products","You connect product specs to customer benefits","You begin building customer confidence in decisions"],
     gaps:["Move from reactive to proactive — understand style before they ask","Start reading emotional cues, not just stated needs","Build trust over time, not just in this transaction"]},
-  4:{name:"Expert Advisor",range:"2.26–2.75",color:"#2d6a5e",
+  4:{name:"Expert Advisor",range:"2.76–3.50",color:"#2d6a5e",
     desc:"You understand taste, curate choices to occasion and identity, and build trust through knowledge. You operate at a high level. The final shift is from being a knowledgeable advisor to a genuinely trusted guide.",
     strengths:["You curate choices aligned to the customer's personal style","You build real trust through knowledge and credibility","You create a thoughtful, personalized experience"],
     gaps:["Discover emotional drivers — not just occasion, but identity and meaning","Create moments that feel premium and memorable","Build a relationship with the customer that extends beyond this visit"]},
-  5:{name:"Trusted Advisor",range:"2.76+",color:"#094d59",
+  5:{name:"Trusted Advisor",range:"3.51+",color:"#094d59",
     desc:"You act as a credible guide. You discover persona, identity, and emotional drivers. You create premium, personalized experiences and build lasting relationships. This training will sharpen and structure what you already do by instinct.",
     strengths:["You discover emotional and identity-level needs naturally","You create genuinely personalized experiences","You build long-term relationships, not just transactions"],
     gaps:["Document your approach so you can coach and mentor others","Apply this consistently across all customer types — especially difficult ones","Use this training to articulate and refine your instincts"]}
@@ -405,11 +420,49 @@ const PERSONA={
 
 const DIM_LABELS={ND:"Needs Discovery",TE:"Transparency & Ethics",EI:"Emotional Intelligence",CS:"Closing Style",RO:"Relationship Orientation",PV:"Product-to-Value"};
 const DIM_COLORS={ND:"#094d59",TE:"#b5944a",EI:"#1D9E75",CS:"#378ADD",RO:"#7F77DD",PV:"#D85A30"};
+const DIM_DESC={
+  ND:{
+    what:"How well you uncover what a customer truly needs — beyond the stated budget and occasion to their personal style, identity, and emotional drivers.",
+    low:"You tend to show product before fully understanding the customer. Start with questions, not showcases.",
+    mid:"You ask about occasion and budget but may not yet explore the deeper emotional or personal context behind the purchase.",
+    high:"You explore what the customer actually means, not just what they say. You read unstated needs and personalize your approach accordingly."
+  },
+  TE:{
+    what:"How honestly and transparently you present products, pricing, and information — including when honesty might cost you the sale.",
+    low:"You may default to reassurance over accuracy. Customers who sense this will not return.",
+    mid:"You are honest when asked but may not proactively surface information that could complicate the sale.",
+    high:"You proactively share relevant details — including limitations — and let the customer decide. This builds the deepest long-term trust."
+  },
+  EI:{
+    what:"How well you read and respond to the emotional state of customers — their body language, hesitation, excitement, and unstated concerns.",
+    low:"You tend to respond to what customers say rather than what they feel. Important cues are being missed.",
+    mid:"You notice emotional signals but may default to product solutions rather than emotional acknowledgment first.",
+    high:"You hold space for customer emotions before moving to solutions. Silence, hesitation, and family dynamics are all information you use well."
+  },
+  CS:{
+    what:"How you guide customers toward a decision — whether you push, persuade, or create the conditions for a confident natural close.",
+    low:"Your closing tends toward pressure or urgency tactics that can feel uncomfortable for the customer.",
+    mid:"You know when to close but may lean on standard techniques rather than reading what this specific customer needs.",
+    high:"You close by removing obstacles and building confidence — not by pushing. The customer feels the decision was entirely their own."
+  },
+  RO:{
+    what:"How much you invest in the customer relationship beyond the immediate transaction — follow-up, memory, and long-term engagement.",
+    low:"Your focus is on completing the transaction. Opportunities to build a lasting relationship are being left on the table.",
+    mid:"You are friendly and professional but may not yet be proactively nurturing relationships after the sale.",
+    high:"You treat every interaction as the beginning of a long relationship. You remember, follow up, and make customers feel genuinely known."
+  },
+  PV:{
+    what:"How effectively you translate product specifications and technical details into meaningful value for each specific customer.",
+    low:"You present features and specifications but the customer has to do the work of figuring out why it matters to them.",
+    mid:"You explain benefits but may default to the same explanation for every customer rather than tailoring to their specific occasion and identity.",
+    high:"You connect every product attribute to this customer's specific story. The certificate, the cut, the price — all become personal, not technical."
+  }
+};
 const IGI_CENTRES=["Mumbai","Delhi","Kolkata","Surat","Chennai","Pune","Bangalore","Hyderabad","Lucknow","Ahmedabad","Jaipur"];
 
 // ── STATE ─────────────────────────────────────────────────────
 let batchConfig={}, regData={}, answers=new Array(25).fill(null);
-let currentQ=0, timerInterval=null, timeLeft=1200, scores={};
+let currentQ=0, timerInterval=null, timeLeft=900, scores={};
 
 // ── INIT ──────────────────────────────────────────────────────
 window.onload=()=>loadConfig();
@@ -547,10 +600,10 @@ function calculateAndShowResults(){
 }
 
 function getPersona(score){
-  if(score<1.25)return 1;
-  if(score<=1.75)return 2;
-  if(score<=2.25)return 3;
-  if(score<=2.75)return 4;
+  if(score<1.75)return 1;
+  if(score<=2.25)return 2;
+  if(score<=2.75)return 3;
+  if(score<=3.50)return 4;
   return 5;
 }
 
@@ -578,15 +631,20 @@ function renderResults(){
   const weak=dimData.reduce((a,b)=>b.val<a.val?b:a);
   document.getElementById('dimGrid').innerHTML=dimData.map(d=>{
     const pLevel=PERSONA[getPersona(d.val)].name;
+    const pIdx=getPersona(d.val);
     const isBest=d.code===best.code,isWeak=d.code===weak.code;
     const barPct=Math.round(((d.val-1)/4)*100);
+    const desc=DIM_DESC[d.code];
+    const suggestion=pIdx<=2?desc.low:pIdx===3?desc.mid:desc.high;
     return `<div class="dim-card ${isBest?'best':isWeak?'weak':''}">
       <div class="dim-name">${DIM_LABELS[d.code]}</div>
+      <div class="dim-what">${desc.what}</div>
       <div class="dim-bar-outer"><div class="dim-bar-inner" style="width:${barPct}%;background:${DIM_COLORS[d.code]}"></div></div>
       <div class="dim-score-row">
         <span class="dim-score">${d.val.toFixed(2)}</span>
         <span class="dim-persona" style="background:${DIM_COLORS[d.code]}22;color:${DIM_COLORS[d.code]}">${pLevel}</span>
       </div>
+      <div class="dim-suggest"><strong>For you →</strong>${suggestion}</div>
     </div>`;
   }).join('');
 
