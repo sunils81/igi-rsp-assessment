@@ -702,6 +702,7 @@ function renderResults(){
 
 // ── FINAL SUBMIT ──────────────────────────────────────────────
 async function finalSubmit(){
+  console.log('finalSubmit called');
   const commitment=document.getElementById('commitment').value.trim();
   document.getElementById('btnFinalSubmit').disabled=true;
   document.getElementById('btnFinalSubmit').textContent='Saving…';
@@ -724,14 +725,26 @@ async function finalSubmit(){
     speed_flag:scores.speedFlag||'N'
   };
   try{
-    // Use GET with encoded data — confirmed working from executions log
+    // Use GET with encoded data
     const encoded = encodeURIComponent(JSON.stringify(payload));
     const getUrl = APPS_SCRIPT_URL + '?action=submitData&data=' + encoded;
-    // Use image tag trick — fires GET without CORS issues
+    console.log('Submitting URL length:', getUrl.length);
+    
+    // Method 1: Script tag injection — bypasses CORS and CSP completely
+    const script = document.createElement('script');
+    script.src = getUrl + '&callback=IGI_CB_' + Date.now();
+    script.onerror = () => console.log('script tag fired (errors are normal for no-JSONP)');
+    document.head.appendChild(script);
+    setTimeout(() => { try { document.head.removeChild(script); } catch(e){} }, 5000);
+    console.log('Script tag GET fired');
+
+    // Method 2: Image tag as backup
     const img = new Image();
     img.src = getUrl;
-    // Also fire via fetch no-cors GET
-    fetch(getUrl, {mode:'no-cors'}).catch(()=>{});
+    console.log('Image GET fired');
+
+    // Method 3: fetch no-cors
+    fetch(getUrl, {mode:'no-cors'}).then(()=>console.log('fetch done')).catch(e=>console.log('fetch error:',e));
     document.getElementById('submit-confirm').style.display='block';
     document.getElementById('btnFinalSubmit').style.display='none';
   }catch(e){
