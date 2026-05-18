@@ -462,6 +462,7 @@ const IGI_CENTRES=["Mumbai","Delhi","Kolkata","Surat","Chennai","Pune","Bangalor
 
 // ── STATE ─────────────────────────────────────────────────────
 let batchConfig={}, regData={}, answers=new Array(25).fill(null);
+let answerScores=new Array(25).fill(null);
 let currentQ=0, timerInterval=null, timeLeft=900, scores={};
 
 // ── INIT ──────────────────────────────────────────────────────
@@ -537,8 +538,17 @@ function autoSubmit(){
   calculateAndShowResults();
 }
 
+function shuffleArr(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
 function renderQ(){
   const q=QUESTIONS[currentQ];
+  if(!q._shuffled){q.options=shuffleArr(q.options);q._shuffled=true;}
   const sel=answers[currentQ];
   const pct=Math.round((currentQ/25)*100);
   document.getElementById('progBar').style.width=pct+'%';
@@ -560,7 +570,8 @@ function renderQ(){
 }
 
 function selectOpt(i){
-  answers[currentQ]=i;
+  answers[currentQ]=i; // store display index for UI highlight
+  answerScores[currentQ]=QUESTIONS[currentQ].options[i].score; // store actual score
   document.getElementById('btnNext').disabled=false;
   renderQ();
 }
