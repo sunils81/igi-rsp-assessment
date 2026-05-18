@@ -138,19 +138,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Ar
 .sg-item.s::before{content:'✓ ';color:var(--success);font-weight:700}
 .sg-item.g::before{content:'→ ';color:var(--warn);font-weight:700}
 
-/* Reflection */
-.reflect-card{background:var(--light);border-radius:10px;padding:16px 20px;margin-bottom:14px}
-.reflect-card h3{font-size:11px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
-.reflect-card ol{padding-left:16px}
-.reflect-card li{font-size:13px;color:var(--text);line-height:1.7}
-.commit-card{background:#fff;border-radius:10px;padding:18px;margin-bottom:14px;box-shadow:0 1px 8px rgba(0,0,0,.06)}
-.commit-card h3{font-size:13px;font-weight:600;color:var(--teal);margin-bottom:4px}
-.commit-card p{font-size:12px;color:var(--muted);margin-bottom:10px}
-.commit-ta{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical;min-height:72px;color:var(--text)}
-.commit-ta:focus{outline:none;border-color:var(--teal)}
-.result-actions{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-.btn-print{background:var(--gold);color:#fff;border:none;padding:11px 24px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
-.btn-submit{background:var(--teal);color:#fff;border:none;padding:11px 24px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
+
 
 /* ── Screens ── */
 .screen{display:none}.screen.active{display:block}
@@ -344,7 +332,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Ar
         <div class="scale-seg" id="seg3" style="background:#2d6a5e">Expert Advisor</div>
         <div class="scale-seg" id="seg4" style="background:#094d59">Trusted Advisor</div>
       </div>
-      <div class="scale-labels"><span>&lt;1.75</span><span>1.76–2.25</span><span>2.26–3.25</span><span>3.26–3.75</span><span>3.76+</span></div>
+      <div class="scale-labels"><span>&lt;2.50</span><span>2.50–2.99</span><span>3.00–3.40</span><span>3.41–3.75</span><span>3.76+</span></div>
     </div>
 
     <div style="background:#fff;border-radius:10px;padding:18px 22px;margin-bottom:14px;box-shadow:0 1px 8px rgba(0,0,0,.06)">
@@ -367,15 +355,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Ar
       <div class="sg-card"><h3>Opportunities to grow</h3><div id="sgGaps"></div></div>
     </div>
 
-    <div class="reflect-card">
-      <h3>Pair reflection — discuss with your partner (10 min)</h3>
-      <ol>
-        <li>Where do you see your persona — does this score feel accurate to you?</li>
-        <li>What are two or three real situations from the store floor that confirm you are at this level?</li>
-        <li>What habit or mindset may be keeping you at this level?</li>
-        <li>What is one specific thing you can do differently in the next 45 days to move toward Trusted Advisor?</li>
-      </ol>
-    </div>
+
 
     <div class="result-actions">
       <button class="btn-print" onclick="window.print()">🖨 Print Result</button>
@@ -396,19 +376,19 @@ const QUESTIONS=[{id:1,dim:"ND",situation:"A well-dressed woman walks in alone. 
 
 // ── PERSONA DATA ──────────────────────────────────────────────
 const PERSONA={
-  1:{name:"Product Pusher",range:"< 1.75",color:"#c4a882",
+  1:{name:"Product Pusher",range:"< 2.50",color:"#c4a882",
     desc:"Your interactions are primarily driven by product features and offers. Customers tend to experience the interaction as transactional. The good news — recognizing this is the first and most important step.",
     strengths:["You know the product range well","You can present price points and offers confidently","You keep interactions efficient"],
     gaps:["Start conversations with a question, not a product","Build space for customers to tell you what they actually need","Shift focus from the sale to the person making it"]},
-  2:{name:"Transaction Achiever",range:"1.76–2.25",color:"#a8896a",
+  2:{name:"Transaction Achiever",range:"2.50–2.99",color:"#a8896a",
     desc:"You engage professionally and understand basic needs. Your success is driven by volume. The next shift is going deeper — beyond budget and occasion to what the customer truly values.",
     strengths:["You engage politely and professionally","You understand occasion and budget basics","You know how to guide a conversation toward closure"],
     gaps:["Go beyond budget — explore personal style and identity","Present features as benefits specific to this customer's need","Build customer confidence in the decision, not just the product"]},
-  3:{name:"Problem Solver",range:"2.26–3.25",color:"#6b7e5e",
+  3:{name:"Problem Solver",range:"3.00–3.40",color:"#6b7e5e",
     desc:"You ask meaningful questions, translate features into benefits, and begin building customer confidence. You are on a strong path. The next level is moving from solving problems to creating experiences.",
     strengths:["You ask relevant questions before showing products","You connect product specs to customer benefits","You begin building customer confidence in decisions"],
     gaps:["Move from reactive to proactive — understand style before they ask","Start reading emotional cues, not just stated needs","Build trust over time, not just in this transaction"]},
-  4:{name:"Expert Advisor",range:"3.26–3.75",color:"#2d6a5e",
+  4:{name:"Expert Advisor",range:"3.41–3.75",color:"#2d6a5e",
     desc:"You understand taste, curate choices to occasion and identity, and build trust through knowledge. You operate at a high level. The final shift is from being a knowledgeable advisor to a genuinely trusted guide.",
     strengths:["You curate choices aligned to the customer's personal style","You build real trust through knowledge and credibility","You create a thoughtful, personalized experience"],
     gaps:["Discover emotional drivers — not just occasion, but identity and meaning","Create moments that feel premium and memorable","Build a relationship with the customer that extends beyond this visit"]},
@@ -654,9 +634,9 @@ function autoSubmit(){
 }
 
 function getPersona(score){
-  if(score<1.75)return 1;
-  if(score<=2.25)return 2;
-  if(score<=3.25)return 3;
+  if(score<2.50)return 1;
+  if(score<=2.99)return 2;
+  if(score<=3.40)return 3;
   if(score<=3.75)return 4;
   return 5;
 }
