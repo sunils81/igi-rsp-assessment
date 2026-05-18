@@ -344,7 +344,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Ar
         <div class="scale-seg" id="seg3" style="background:#2d6a5e">Expert Advisor</div>
         <div class="scale-seg" id="seg4" style="background:#094d59">Trusted Advisor</div>
       </div>
-      <div class="scale-labels"><span>&lt;1.75</span><span>1.76–2.25</span><span>2.26–2.75</span><span>2.76–3.75</span><span>3.76+</span></div>
+      <div class="scale-labels"><span>&lt;1.75</span><span>1.76–2.25</span><span>2.26–3.25</span><span>3.26–3.75</span><span>3.76+</span></div>
     </div>
 
     <div style="background:#fff;border-radius:10px;padding:18px 22px;margin-bottom:14px;box-shadow:0 1px 8px rgba(0,0,0,.06)">
@@ -400,15 +400,15 @@ const PERSONA={
     desc:"Your interactions are primarily driven by product features and offers. Customers tend to experience the interaction as transactional. The good news — recognizing this is the first and most important step.",
     strengths:["You know the product range well","You can present price points and offers confidently","You keep interactions efficient"],
     gaps:["Start conversations with a question, not a product","Build space for customers to tell you what they actually need","Shift focus from the sale to the person making it"]},
-  2:{name:"Transaction Achiever",range:"2.76–3.75",color:"#a8896a",
+  2:{name:"Transaction Achiever",range:"1.76–2.25",color:"#a8896a",
     desc:"You engage professionally and understand basic needs. Your success is driven by volume. The next shift is going deeper — beyond budget and occasion to what the customer truly values.",
     strengths:["You engage politely and professionally","You understand occasion and budget basics","You know how to guide a conversation toward closure"],
     gaps:["Go beyond budget — explore personal style and identity","Present features as benefits specific to this customer's need","Build customer confidence in the decision, not just the product"]},
-  3:{name:"Problem Solver",range:"2.76–3.75",color:"#6b7e5e",
+  3:{name:"Problem Solver",range:"2.26–3.25",color:"#6b7e5e",
     desc:"You ask meaningful questions, translate features into benefits, and begin building customer confidence. You are on a strong path. The next level is moving from solving problems to creating experiences.",
     strengths:["You ask relevant questions before showing products","You connect product specs to customer benefits","You begin building customer confidence in decisions"],
     gaps:["Move from reactive to proactive — understand style before they ask","Start reading emotional cues, not just stated needs","Build trust over time, not just in this transaction"]},
-  4:{name:"Expert Advisor",range:"2.76–3.75",color:"#2d6a5e",
+  4:{name:"Expert Advisor",range:"3.26–3.75",color:"#2d6a5e",
     desc:"You understand taste, curate choices to occasion and identity, and build trust through knowledge. You operate at a high level. The final shift is from being a knowledgeable advisor to a genuinely trusted guide.",
     strengths:["You curate choices aligned to the customer's personal style","You build real trust through knowledge and credibility","You create a thoughtful, personalized experience"],
     gaps:["Discover emotional drivers — not just occasion, but identity and meaning","Create moments that feel premium and memorable","Build a relationship with the customer that extends beyond this visit"]},
@@ -584,14 +584,15 @@ function nextQ(){
 
 // ── SCORING ───────────────────────────────────────────────────
 function calculateAndShowResults(){
-  // Calculate time taken two ways and use the more accurate one
-  const timerBasedTime = 900 - timeLeft; // most reliable — counts down from 900
-  const clockBasedTime = assessmentStartTime ? Math.round((Date.now() - assessmentStartTime) / 1000) : timerBasedTime;
-  const timeTakenSeconds = timerBasedTime > 0 ? timerBasedTime : clockBasedTime;
-  const speedFlag = timeTakenSeconds < 180 ? 'Y' : 'N'; // under 3 min flagged
+  // Calculate time taken using timer countdown (most reliable method)
+  const timerBasedTime = 900 - timeLeft;
+  const clockBasedTime = assessmentStartTime ? Math.round((Date.now() - assessmentStartTime) / 1000) : 0;
+  // Use whichever is higher (more conservative — less likely to miss fast completion)
+  const timeTakenSeconds = Math.max(timerBasedTime, clockBasedTime);
+  const speedFlag = timeTakenSeconds < 180 ? 'Y' : 'N'; // under 3 min = flagged
   scores.timeTakenSeconds = timeTakenSeconds;
   scores.speedFlag = speedFlag;
-  console.log('Time taken:', timeTakenSeconds, 's (timer-based:', timerBasedTime, 'clock-based:', clockBasedTime, ') | SpeedFlag:', speedFlag);
+  console.log('timeLeft:', timeLeft, '| timerBased:', timerBasedTime, '| clockBased:', clockBasedTime, '| timeTaken:', timeTakenSeconds, '| SpeedFlag:', speedFlag);
   document.getElementById('prog').style.display='none';
   document.getElementById('timer').style.display='none';
   showScreen('s-submitting');
@@ -654,7 +655,7 @@ function autoSubmit(){
 function getPersona(score){
   if(score<1.75)return 1;
   if(score<=2.25)return 2;
-  if(score<=2.75)return 3;
+  if(score<=3.25)return 3;
   if(score<=3.75)return 4;
   return 5;
 }
