@@ -213,7 +213,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Ar
         <strong>Important:</strong> Pick the option that most closely describes what you <em>actually do today</em> — not what sounds best or what you aspire to do. Honest answers give you a more useful result and help your trainer focus on what matters most for you.
       </div>
       <div class="inst-grid">
-        <div class="inst-box"><div class="inst-label">Questions</div><div class="inst-val">25 retail floor situations</div></div>
+        <div class="inst-box"><div class="inst-label">Questions</div><div class="inst-val">22 retail floor situations</div></div>
         <div class="inst-box"><div class="inst-label">Time allowed</div><div class="inst-val">15 minutes</div></div>
         <div class="inst-box"><div class="inst-label">Attempts</div><div class="inst-val">One attempt only per batch</div></div>
         <div class="inst-box"><div class="inst-label">After completion</div><div class="inst-val">Your Sales Persona result and a personalised breakdown</div></div>
@@ -532,7 +532,7 @@ function renderQ(){
   const q=QUESTIONS[currentQ];
   if(!q._shuffled){q.options=shuffleArr(q.options);q._shuffled=true;}
   const sel=answers[currentQ];
-  const pct=Math.round((currentQ/25)*100);
+  const pct=Math.round((currentQ/22)*100);
   document.getElementById('progBar').style.width=pct+'%';
   document.getElementById('progTxt').textContent=(currentQ+1)+' / 25';
   const dimFull=DIM_LABELS[q.dim]||'';
@@ -542,7 +542,7 @@ function renderQ(){
       <div class="opt-text">${o.text}</div>
     </div>`).join('');
   document.getElementById('qCard').innerHTML=`
-    <div class="q-num">Question ${q.id} of 25</div>
+    <div class="q-num">Question ${q.id} of 22</div>
     <div class="q-situation">${q.situation}</div>
     <div class="q-text">${q.question}</div>
     <div class="options">${opts}</div>`;
